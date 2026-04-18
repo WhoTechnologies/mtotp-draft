@@ -15,11 +15,34 @@ Portions of this specification are subject to a provisional patent application, 
 
 Copyright (C) Who Technologies (2026).
 
+## TODOs
+
+### TODOs Before Sharing Externally
+
+#### Technical Issues
+
+- [ ] Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find)
+- [ ] Explicit note about minimum pbfdk2 entropy bits 
+- [ ] Security Analysis (at least a minimal one)
+- [ ] Decide if we keep scrypt, and if not, do we replace it with something beyond argon2id or do we just have two algs?
+- [ ] Document minimum entropy for PBKDF2
+
+#### Documentation / Format Issues
+
+- [ ] Does this draft really need to be this long?
+- [ ] Move all design goals, reasoning, background research, etc to Appendix A
+- [ ] Do we need the references section?
+- [ ] Finish Suggested Starting Points
+
+### TODOs Before Publicly Publishing
+
+- [ ] Finish the MTOTP Process Overview section
+- [ ] Include test vectors that can be used to verify third party code.
+- [ ] Include a reference implementation that others can test their code against (Appendix X) https://www.ietf.org/rfc/rfc4226.txt
+
 ## Abstract
 
 This document describes an extension to the Time-Based One-Time Password (TOTP) algorithm [RFC6238](https://www.rfc-editor.org/info/rfc6238) that enables mutual authentication between two parties.  Standard TOTP provides unidirectional authentication: the verifying party authenticates the code-generating party, but not vice versa.  This document specifies a method by which two parties each contribute Input Keying Material (IKM) to derive two directional TOTP shared secrets, one per direction of verification, without requiring a coordinating server or either party to generate or transmit a complete cryptographic secret.
-
-> TODO: Does this draft really need to be this long?
 
 ## Table of Contents
 
