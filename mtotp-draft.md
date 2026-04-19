@@ -22,44 +22,44 @@ Copyright (C) Who Technologies (2026).
 #### Technical Issues
 
 - RFC-MTOTP-0.1k > 8 Security Considerations1
-- Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny. #technical #external
-- RFC-MTOTP-0.1k > A 15 Argon2id TMTO Resistance skip1
-- VERIFY the math / accuracy of this section #technical #external
+- Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.
+- RFC-MTOTP-0.1k > A 15 Argon2id TMTO Resistance
+- VERIFY the math / accuracy of this section
 
 #### Documentation Issues
 
-- Does this draft really need to be this long? #documentation #external
-- RFC-MTOTP-0.1k > Appendix A Rationale skip1 > Possibly add content here about the reasoning for always exactly filling up the  section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro #documentation #external
-- RFC-MTOTP-0.1k > A 10 Cross-Algorithm Equivalence skip1 > Either remove this section or move it to the appendix #documentation #external
-- RFC-MTOTP-0.1k > Appendix E ABNF Grammar skip1 > Decide if needed and if so define formal ABNF per RFC5234 for: #external #documentation
-- RFC-MTOTP-0.1k > Appendix Z References skip1 > Do we need the references section? have not reviewed. Claude wrote this. Will review once spec complete. #documentation #external
+- Does this draft really need to be this long?
+- RFC-MTOTP-0.1k > Appendix A Rationale > Possibly add content here about the reasoning for always exactly filling up the  section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro
+- RFC-MTOTP-0.1k > A 10 Cross-Algorithm Equivalence > Either remove this section or move it to the appendix
+- RFC-MTOTP-0.1k > Appendix E ABNF Grammar > Decide if needed and if so define formal ABNF per RFC5234 for:
+- RFC-MTOTP-0.1k > Appendix Z References > Do we need the references section? have not reviewed. Claude wrote this. Will review once spec complete.
 
 ### TODOs Before Publicly Publishing
 
 #### Technical Issues
 
-- RFC-MTOTP-0.1k > 3 1 2 Message Checksum1 > Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit. #technical #public
-- RFC-MTOTP-0.1k > 3 3 3 Compact Format KDF Algorithm1 > If removing scrypt as an option, we can remove this bit and apply it to elsewhere (eg: a difficulty level, or a version) instead. #technical #public
-- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > "fixed to OWASP recommendations" is load-bearing text here — confirm specific parameter values before this document advances. #technical #public
-- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > consider whether a 1- or 2-bit difficulty hint is feasible within the overhead budget; see TODOs in 4.3.4.1 and 4.3.4.2. #technical #public
-- RFC-MTOTP-0.1k > 3 3 4 1 Compact Format scrypt1 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? Or remove scrypt completely #technical #public
-- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? #technical #public
-- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy. #technical #public
-- RFC-MTOTP-0.1k > 6 KDF Difficulty Scaling1 > Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find) #technical #public
-- RFC-MTOTP-0.1k > 6 1 PBKDF2-HMAC-SHA-256 Parameters1 > Confirm minimum combined IKM entropy for PBKDF2. #technical #public
-- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Decide whether to retain scrypt. #technical #public
-- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Consider lowering  to 1 for single-threaded devices. #technical #public
-- RFC-MTOTP-0.1k > A 9 Baseline Level 0 skip1 > We almost certainly want to lower the baseline / level 0 requirement to avoid preventing people with older devices from using the protocol. This document was written before we started gathering actual device stats. Once we've completed that, this scale will be updated to match. #technical #public
-- RFC-MTOTP-0.1k > Appendix C Test Vectors skip1 > Include test vectors that can be used to verify third party code. Generate and verify all test vectors once parameters are finalized. Authors MUST verify all values; do not use placeholders as reference data. #technical #public
-- RFC-MTOTP-0.1k > Appendix D Security Analysis skip1 > This appendix requires a dedicated writing session with verified GPU benchmarks. Structure should be comparable to RFC 4226 Appendix A. #technical #public
-- RFC-MTOTP-0.1k > Appendix X Reference Implementation skip1 > Include a reference implementation that others can test their code against (Appendix X) https://www.ietf.org/rfc/rfc4226.txt / Include a JS? implementation of calculating everything, converting to/from binary, etc. https://www.ietf.org/rfc/rfc4226.txt #technical #public
+- RFC-MTOTP-0.1k > 3 1 2 Message Checksum1 > Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit.
+- RFC-MTOTP-0.1k > 3 3 3 Compact Format KDF Algorithm1 > If removing scrypt as an option, we can remove this bit and apply it to elsewhere (eg: a difficulty level, or a version) instead.
+- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > "fixed to OWASP recommendations" is load-bearing text here — confirm specific parameter values before this document advances.
+- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > consider whether a 1- or 2-bit difficulty hint is feasible within the overhead budget; see TODOs in 4.3.4.1 and 4.3.4.2.
+- RFC-MTOTP-0.1k > 3 3 4 1 Compact Format scrypt1 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? Or remove scrypt completely
+- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...?
+- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy.
+- RFC-MTOTP-0.1k > 6 KDF Difficulty Scaling1 > Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find)
+- RFC-MTOTP-0.1k > 6 1 PBKDF2-HMAC-SHA-256 Parameters1 > Confirm minimum combined IKM entropy for PBKDF2.
+- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Decide whether to retain scrypt.
+- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Consider lowering  to 1 for single-threaded devices.
+- RFC-MTOTP-0.1k > A 9 Baseline Level 0 > We almost certainly want to lower the baseline / level 0 requirement to avoid preventing people with older devices from using the protocol. This document was written before we started gathering actual device stats. Once we've completed that, this scale will be updated to match.
+- RFC-MTOTP-0.1k > Appendix C Test Vectors > Include test vectors that can be used to verify third party code. Generate and verify all test vectors once parameters are finalized. Authors MUST verify all values; do not use placeholders as reference data.
+- RFC-MTOTP-0.1k > Appendix D Security Analysis > This appendix requires a dedicated writing session with verified GPU benchmarks. Structure should be comparable to RFC 4226 Appendix A.
+- RFC-MTOTP-0.1k > Appendix X Reference Implementation > Include a reference implementation that others can test their code against (Appendix X) https://www.ietf.org/rfc/rfc4226.txt / Include a JS? implementation of calculating everything, converting to/from binary, etc. https://www.ietf.org/rfc/rfc4226.txt
 
 #### Documentation Issues
 
-- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty1 > Add info to Appendix A about this being famous last words all rolled up into one little section right here. 😭 #documentation #public
-- RFC-MTOTP-0.1k > 4 MTOTP Message Encodings1 > Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned. #documentation #public
-- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Define memory for each level more precisely. #documentation #public
-- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Define memory for each level more precisely. #documentation #public
+- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty1 > Add info to Appendix A about this being famous last words all rolled up into one little section right here. 😭
+- RFC-MTOTP-0.1k > 4 MTOTP Message Encodings1 > Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned.
+- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Define memory for each level more precisely.
+- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Define memory for each level more precisely.
 
 ## Abstract
 
@@ -69,78 +69,78 @@ This document describes an extension to the Time-Based One-Time Password (TOTP) 
 
 If you're creating an implementation, start with X.
 
-If you're reviewing this document, start with [[#Appendix A. Rationale]] to understand the goals and how they were achieved.
+If you're reviewing this document, start with [#Appendix A. Rationale](#appendix-a-rationale) to understand the goals and how they were achieved.
 
 - [ ] Finish / reword this section
 
 ## Table of Contents
 
-- 1. Introduction
-	- 1.1. Scope
-	- 1.2. Background
-	- 1.3. MTOTP Process Overview
-- 2. Notation and Terminology
-- 3. MTOTP Message Format
-	- 3.1. Common Binary Structure
-		- 3.1.1. Initial Keying Material (IKM)
-		- 3.1.2. Message Checksum
-	- 3.2. Extended Format Headers
-		- 3.2.1. Extended Format Version Header
-		- 3.2.2. Extended v1 Header Structure
-		- 3.2.3. Extended v1 KDF Algorithm
-		- 3.2.4. Extended v1 KDF Difficulty Scale
-	- 3.3. Compact Format Headers
-		- 3.3.1. Compact Format Binary Structure
-		- 3.3.2. Compact Format Version
-		- 3.3.3. Compact Format KDF Algorithm
-		- 3.3.4. Compact Format KDF Difficulty
-			- 3.3.4.1. Compact Format scrypt
-			- 3.3.4.2. Compact Format Argon2id
-- 4. MTOTP Message Encodings
-	- 4.1. Decimal Encoding
-		- 4.1.1. Decimal Encode Procedure
-		- 4.1.2. Decimal Decode Procedure
-	- 4.2. BIP39 Word List Encoding
-		- 4.2.1. BIP39 Encode Procedure
-		- 4.2.2. BIP39 Decode Procedure
-	- 4.3. Encoded String
-		- 4.3.1. Base64URL Encode Procedure
-		- 4.3.2. Base64URL Decode Procedure
-- 5. Secret Derivation
-	- 5.1. IKM Identification
-	- 5.2. Capability Negotiation
-	- 5.3. Key Derivation
-	- 5.4. TOTP Application
-- 6. KDF Difficulty Scaling
-	- 6.1. PBKDF2-HMAC-SHA-256 Parameters
-	- 6.2. Scrypt Parameters
-	- 6.3. Argon2id Parameters
-- 7. Clock Synchronization
-- 8. Security Considerations
-	- 8.1. MTOTP Message Exchange Channel
-	- 8.2. Entropy and Key Strength
-	- 8.3. Key Derivation Rationale
-	- 8.4. Clock and Replay Considerations
-- Appendix A. Rationale
-	- A.1. Decimal Encoding and Compact Format
-	- A.2. Decimal Encoding: Message Length Derivation
-	- A.3. Decimal Encoding: Floating-Point Arithmetic
-	- A.4. Key Derivation: Fixed Protocol Salt
-	- A.5. TOTP Parameter Compatibility
-	- A.6. Difficulty Scale Design Goals
-	- A.7. Attacker Cost Model
-	- A.8. Scale Definition
-	- A.9. Baseline (Level 0)
-	- A.10. Cross-Algorithm Equivalence
-	- A.11. PBKDF2 Historical Iteration Count Trajectory
-	- A.12. Scrypt Difficulty Scaling Rationale
-	- A.13. Scrypt TMTO Resistance
-	- A.14. Argon2id Level Calibration
-	- A.15. Argon2id TMTO Resistance
-- Appendix B. Examples
-	- B.1. Decimal Encoding: IKM Bit Length Examples
-	- B.2. Decimal Encoding: Symbol Count Examples
-	- B.3. Decimal Encoding: Message Bit Length Examples
+- [#1. Introduction](#1-introduction)
+	- [#1.1. Scope](#11-scope)
+	- [#1.2. Background](#12-background)
+	- [#1.3. MTOTP Process Overview](#13-mtotp-process-overview)
+- [#2. Notation and Terminology](#2-notation-and-terminology)
+- [#3. MTOTP Message Format](#3-mtotp-message-format)
+	- [#3.1. Common Binary Structure](#31-common-binary-structure)
+		- [#3.1.1. Initial Keying Material (IKM)](#311-initial-keying-material-ikm)
+		- [#3.1.2. Message Checksum](#312-message-checksum)
+	- [#3.2. Extended Format Headers](#32-extended-format-headers)
+		- [#3.2.1. Extended Format Version Header](#321-extended-format-version-header)
+		- [#3.2.2. Extended v1 Header Structure](#322-extended-v1-header-structure)
+		- [#3.2.3. Extended v1 KDF Algorithm](#323-extended-v1-kdf-algorithm)
+		- [#3.2.4. Extended v1 KDF Difficulty Scale](#324-extended-v1-kdf-difficulty-scale)
+	- [#3.3. Compact Format Headers](#33-compact-format-headers)
+		- [#3.3.1. Compact Format Binary Structure](#331-compact-format-binary-structure)
+		- [#3.3.2. Compact Format Version](#332-compact-format-version)
+		- [#3.3.3. Compact Format KDF Algorithm](#333-compact-format-kdf-algorithm)
+		- [#3.3.4. Compact Format KDF Difficulty](#334-compact-format-kdf-difficulty)
+			- [#3.3.4.1. Compact Format scrypt](#3341-compact-format-scrypt)
+			- [#3.3.4.2. Compact Format Argon2id](#3342-compact-format-argon2id)
+- [#4. MTOTP Message Encodings](#4-mtotp-message-encodings)
+	- [#4.1. Decimal Encoding](#41-decimal-encoding)
+		- [#4.1.1. Decimal Encode Procedure](#411-decimal-encode-procedure)
+		- [#4.1.2. Decimal Decode Procedure](#412-decimal-decode-procedure)
+	- [#4.2. BIP39 Word List Encoding](#42-bip39-word-list-encoding)
+		- [#4.2.1. BIP39 Encode Procedure](#421-bip39-encode-procedure)
+		- [#4.2.2. BIP39 Decode Procedure](#422-bip39-decode-procedure)
+	- [#4.3. Encoded String](#43-encoded-string)
+		- [#4.3.1. Base64URL Encode Procedure](#431-base64url-encode-procedure)
+		- [#4.3.2. Base64URL Decode Procedure](#432-base64url-decode-procedure)
+- [#5. Secret Derivation](#5-secret-derivation)
+	- [#5.1. IKM Identification](#51-ikm-identification)
+	- [#5.2. Capability Negotiation](#52-capability-negotiation)
+	- [#5.3. Key Derivation](#53-key-derivation)
+	- [#5.4. TOTP Application](#54-totp-application)
+- [#6. KDF Difficulty Scaling](#6-kdf-difficulty-scaling)
+	- [#6.1. PBKDF2-HMAC-SHA-256 Parameters](#61-pbkdf2-hmac-sha-256-parameters)
+	- [#6.2. Scrypt Parameters](#62-scrypt-parameters)
+	- [#6.3. Argon2id Parameters](#63-argon2id-parameters)
+- [#7. Clock Synchronization](#7-clock-synchronization)
+- [#8. Security Considerations](#8-security-considerations)
+	- [#8.1. MTOTP Message Exchange Channel](#81-mtotp-message-exchange-channel)
+	- [#8.2. Entropy and Key Strength](#82-entropy-and-key-strength)
+	- [#8.3. Key Derivation Rationale](#83-key-derivation-rationale)
+	- [#8.4. Clock and Replay Considerations](#84-clock-and-replay-considerations)
+- [#Appendix A. Rationale](#appendix-a-rationale)
+	- [#A.1. Decimal Encoding and Compact Format](#a1-decimal-encoding-and-compact-format)
+	- [#A.2. Decimal Encoding: Message Length Derivation](#a2-decimal-encoding-message-length-derivation)
+	- [#A.3. Decimal Encoding: Floating-Point Arithmetic](#a3-decimal-encoding-floating-point-arithmetic)
+	- [#A.4. Key Derivation: Fixed Protocol Salt](#a4-key-derivation-fixed-protocol-salt)
+	- [#A.5. TOTP Parameter Compatibility](#a5-totp-parameter-compatibility)
+	- [#A.6. Difficulty Scale Design Goals](#a6-difficulty-scale-design-goals)
+	- [#A.7. Attacker Cost Model](#a7-attacker-cost-model)
+	- [#A.8. Scale Definition](#a8-scale-definition)
+	- [#A.9. Baseline (Level 0)](#a9-baseline-level-0)
+	- [#A.10. Cross-Algorithm Equivalence](#a10-cross-algorithm-equivalence)
+	- [#A.11. PBKDF2 Historical Iteration Count Trajectory](#a11-pbkdf2-historical-iteration-count-trajectory)
+	- [#A.12. Scrypt Difficulty Scaling Rationale](#a12-scrypt-difficulty-scaling-rationale)
+	- [#A.13. Scrypt TMTO Resistance](#a13-scrypt-tmto-resistance)
+	- [#A.14. Argon2id Level Calibration](#a14-argon2id-level-calibration)
+	- [#A.15. Argon2id TMTO Resistance](#a15-argon2id-tmto-resistance)
+- [#Appendix B. Examples](#appendix-b-examples)
+	- [#B.1. Decimal Encoding: IKM Bit Length Examples](#b1-decimal-encoding-ikm-bit-length-examples)
+	- [#B.2. Decimal Encoding: Symbol Count Examples](#b2-decimal-encoding-symbol-count-examples)
+	- [#B.3. Decimal Encoding: Message Bit Length Examples](#b3-decimal-encoding-message-bit-length-examples)
 
 ## 1. Introduction
 
@@ -174,10 +174,10 @@ MTOTP extends TOTP by replacing the server-provisioned shared secret with two di
 Establishment requires both parties to exchange MTOTP messages. Each party constructs and transmits a message, then receives and processes the other party's message. Both steps MUST be completed before any TOTP authentication can occur. The order of exchange is not significant.
 
 **Preparing an MTOTP Message to Send**
-Select an encoding (Section [[#4. MTOTP Message Encodings]]), construct the message (Section [[#3. MTOTP Message Format]]), and have the user transmit it to the other party.
+Select an encoding (Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings)), construct the message (Section [#3. MTOTP Message Format](#3-mtotp-message-format)), and have the user transmit it to the other party.
 
 **Processing a Received MTOTP Message**
-Decode and validate the received message (Sections [[#3. MTOTP Message Format]] and [[#4. MTOTP Message Encodings]]), derive the Shared Secrets (Section [[#5. Secret Derivation]]), and use each Shared Secret as key $K$ in TOTP [RFC6238] per Section [[#5.4. TOTP Application]].
+Decode and validate the received message (Sections [#3. MTOTP Message Format](#3-mtotp-message-format) and [#4. MTOTP Message Encodings](#4-mtotp-message-encodings)), derive the Shared Secrets (Section [#5. Secret Derivation](#5-secret-derivation)), and use each Shared Secret as key $K$ in TOTP [RFC6238] per Section [#5.4. TOTP Application](#54-totp-application).
 
 ## 2. Notation and Terminology
 
@@ -267,17 +267,17 @@ Determines the structure of the Format-Specific Headers field.
 
 | Value | Meaning                                                         |
 | ----- | --------------------------------------------------------------- |
-| `0`   | Extended Format. See Section [[#3.2. Extended Format Headers]]. |
-| `1`   | Compact Format. See Section [[#3.3. Compact Format Headers]].   |
+| `0`   | Extended Format. See Section [#3.2. Extended Format Headers](#32-extended-format-headers). |
+| `1`   | Compact Format. See Section [#3.3. Compact Format Headers](#33-compact-format-headers).   |
 
 **Format-Specific Headers (variable):**
-Present in all messages.  Structure depends on the value of the Message Format bit. See Sections [[#3.2. Extended Format Headers]] and [[#3.3. Compact Format Headers]].
+Present in all messages.  Structure depends on the value of the Message Format bit. See Sections [#3.2. Extended Format Headers](#32-extended-format-headers) and [#3.3. Compact Format Headers](#33-compact-format-headers).
 
 **IKM Bits (variable):**
-Initial Keying Material. See Section [[#3.1.1. Initial Keying Material (IKM)]].
+Initial Keying Material. See Section [#3.1.1. Initial Keying Material (IKM)](#311-initial-keying-material-ikm).
 
 **Message Checksum (5 bits):**
-Occupies the five least significant bits of every MTOTP message. See Section [[#3.1.2. Message Checksum]].
+Occupies the five least significant bits of every MTOTP message. See Section [#3.1.2. Message Checksum](#312-message-checksum).
 
 #### 3.1.1. Initial Keying Material (IKM)
 
@@ -309,7 +309,7 @@ where HMAC-SHA256 is as defined in [RFC4231](https://www.rfc-editor.org/info/rfc
 
 Implementations MUST verify the checksum upon decoding an MTOTP message and MUST reject any message that fails verification.
 
-- [ ] Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit. #technical #public
+- [ ] Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit.
 
 ### 3.2. Extended Format Headers
 
@@ -331,15 +331,15 @@ Identifies the structure of the Version-Specific Headers field.
 
 | Value | Meaning                                                          |
 | ----- | ---------------------------------------------------------------- |
-| `01`  | Version 1. See Section [[#3.2.2. Extended v1 Header Structure]]. |
+| `01`  | Version 1. See Section [#3.2.2. Extended v1 Header Structure](#322-extended-v1-header-structure). |
 | `10`  | Reserved.                                                        |
 | `11`  | Reserved.                                                        |
 | `00`  | Reserved.                                                        |
 
-Version numbering begins at `01` rather than `00` so that any valid Extended message is guaranteed to contain a `1` bit within the first three bits, ensuring the binary value is never ambiguous when reconstructed from decimal encoding. See Section [[#4.1. Decimal Encoding]]. Values `00`, `10`, and `11` are reserved for future protocol enhancements or KDF algorithm updates. 
+Version numbering begins at `01` rather than `00` so that any valid Extended message is guaranteed to contain a `1` bit within the first three bits, ensuring the binary value is never ambiguous when reconstructed from decimal encoding. See Section [#4.1. Decimal Encoding](#41-decimal-encoding). Values `00`, `10`, and `11` are reserved for future protocol enhancements or KDF algorithm updates. 
 
 **Version-Specific Headers (variable):**
-Structure depends on the Extended Version field.  This document specifies Version 1 only.  See Section [[#3.2.2. Extended v1 Header Structure]].
+Structure depends on the Extended Version field.  This document specifies Version 1 only.  See Section [#3.2.2. Extended v1 Header Structure](#322-extended-v1-header-structure).
 
 A receiver that encounters an Extended Version value it does not recognise or support MUST NOT attempt to parse the remainder of the message, MUST reject the message, and MUST inform the user that the peer device uses an unsupported version of the protocol.
 
@@ -353,10 +353,10 @@ Version 01 Headers {
 ```
 
 **KDF Algorithm (3 bits):**
-See Section [[#3.2.3. Extended v1 KDF Algorithm]].
+See Section [#3.2.3. Extended v1 KDF Algorithm](#323-extended-v1-kdf-algorithm).
 
 **KDF Difficulty (3 bits):**
-See Section [[#3.2.4. Extended v1 KDF Difficulty Scale]].
+See Section [#3.2.4. Extended v1 KDF Difficulty Scale](#324-extended-v1-kdf-difficulty-scale).
 
 **The total message overhead for Extended Format Version 1 is 14 bits:**
 
@@ -381,13 +381,13 @@ Each bit in the KDF Algorithm field indicates support for one algorithm. A devic
 
 The negotiated algorithm is the highest-security algorithm for which both devices have set the corresponding bit. The security ordering from lowest to highest is: PBKDF2-HMAC-SHA-256, scrypt, Argon2id.  If no algorithm bit is set in common by both devices, the exchange MUST fail.
 
-- [ ] Consider adding a section for the above paragraph (ie: "how to choose the common kdf algorithm") instead of embedding it in the header description. #documentation 
+- [ ] Consider adding a section for the above paragraph (ie: "how to choose the common kdf algorithm") instead of embedding it in the header description. 
 
-PBKDF2-HMAC-SHA-256 is included solely for environments with FIPS-140 compliance requirements and is considered the weakest of the three supported algorithms. Implementations SHOULD support at least one of scrypt or Argon2id in addition to PBKDF2, ensuring that PBKDF2 is only negotiated when the peer device supports no stronger algorithm. See [[#6.1. PBKDF2-HMAC-SHA-256 Parameters]].
+PBKDF2-HMAC-SHA-256 is included solely for environments with FIPS-140 compliance requirements and is considered the weakest of the three supported algorithms. Implementations SHOULD support at least one of scrypt or Argon2id in addition to PBKDF2, ensuring that PBKDF2 is only negotiated when the peer device supports no stronger algorithm. See [#6.1. PBKDF2-HMAC-SHA-256 Parameters](#61-pbkdf2-hmac-sha-256-parameters).
 
 #### 3.2.4. Extended v1 KDF Difficulty Scale
 
-The three-bit Difficulty Scaling field encodes an integer value in the range 0–7 (binary `000`–`111`). This value is interpreted as an index into a per-algorithm difficulty parameter table, as specified in Section [[#6. KDF Difficulty Scaling]]. The same index value applies regardless of the negotiated KDF algorithm; the corresponding parameters for the negotiated algorithm are selected from that algorithm's table.
+The three-bit Difficulty Scaling field encodes an integer value in the range 0–7 (binary `000`–`111`). This value is interpreted as an index into a per-algorithm difficulty parameter table, as specified in Section [#6. KDF Difficulty Scaling](#6-kdf-difficulty-scaling). The same index value applies regardless of the negotiated KDF algorithm; the corresponding parameters for the negotiated algorithm are selected from that algorithm's table.
 
 ### 3.3. Compact Format Headers
 
@@ -420,7 +420,7 @@ The Compact Format contains no version field. Version omission is intentional; t
 
 The Compact Format uses a single bit to indicate the highest-security algorithm the device supports. An implementation MUST support scrypt in order to support Compact Format; scrypt is the baseline and cannot be omitted.
 
-- [ ] If removing scrypt as an option, we can remove this bit and apply it to elsewhere (eg: a difficulty level, or a version) instead. #technical #public 
+- [ ] If removing scrypt as an option, we can remove this bit and apply it to elsewhere (eg: a difficulty level, or a version) instead. 
 
 | Value | scrypt [RFC7914](https://www.rfc-editor.org/info/rfc7914) | Argon2id [RFC9106](https://www.rfc-editor.org/info/rfc9106) |
 | ----- | --------------------------------------------------------- | ----------------------------------------------------------- |
@@ -435,27 +435,27 @@ PBKDF2-HMAC-SHA-256 is explicitly prohibited in Compact Format. Compact Format p
 
 To conserve space and account for the reduced entropy available in Compact Format, KDF Difficulty is fixed rather than negotiated. Parameters are chosen conservatively, following current OWASP recommendations. 
 
-- [ ] "fixed to OWASP recommendations" is load-bearing text here — confirm specific parameter values before this document advances. #technical #public
-- [ ] consider whether a 1- or 2-bit difficulty hint is feasible within the overhead budget; see TODOs in 4.3.4.1 and 4.3.4.2. #technical #public
-- [ ] Add info to Appendix A about this being famous last words all rolled up into one little section right here. 😭 #documentation #public
+- [ ] "fixed to OWASP recommendations" is load-bearing text here — confirm specific parameter values before this document advances.
+- [ ] consider whether a 1- or 2-bit difficulty hint is feasible within the overhead budget; see TODOs in 4.3.4.1 and 4.3.4.2.
+- [ ] Add info to Appendix A about this being famous last words all rolled up into one little section right here. 😭
 
 ##### 3.3.4.1. Compact Format scrypt
 
-- [ ] Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? Or remove scrypt completely #technical #public
+- [ ] Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? Or remove scrypt completely
 
 ##### 3.3.4.2. Compact Format Argon2id
 
-- [ ] Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? #technical #public 
+- [ ] Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? 
  
 If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail. 
 
-- [ ] define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy. #technical #public 
+- [ ] define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy. 
 
 ## 4. MTOTP Message Encodings
 
 The binary MTOTP message is the normative form; the encodings defined in this section are representations of that binary value that are more easily transmitted by humans.
 
-Each encoding defines a bits-per-symbol value $C$ and a symbol unit (digits, words, or characters). The value of $C$ for each encoding is defined in its respective subsection (Sections [[#4.1. Decimal Encoding]], [[#4.2. BIP39 Word List Encoding]], [[#4.3. Encoded String]]). The formulas below use these values and apply to all encodings.
+Each encoding defines a bits-per-symbol value $C$ and a symbol unit (digits, words, or characters). The value of $C$ for each encoding is defined in its respective subsection (Sections [#4.1. Decimal Encoding](#41-decimal-encoding), [#4.2. BIP39 Word List Encoding](#42-bip39-word-list-encoding), [#4.3. Encoded String](#43-encoded-string)). The formulas below use these values and apply to all encodings.
 
 **IKM Bit Length.** The encoded message must fit exactly into a whole number of symbols, with no partial symbols and no padding. Because the length of the IKM is not transmitted, the decoder re-derives it from $N_S$ — this is only possible if the encoder always fills the encoding completely. Choose a minimum IKM length $B_{min}$ (in bits). The actual IKM length $B_{ikm}$ is the smallest value greater than or equal to $B_{min}$ that satisfies this constraint:
 
@@ -467,36 +467,36 @@ $$B_{message} = \left\lfloor N_S \times C \right\rfloor$$
 
 For encodings with integer $C$, this is exact. For decimal, where $C=log⁡_{2}(10)$, the floor resolves the fractional remainder.
 
-> See Appendix [[#B.2. Decimal Encoding Symbol Count Examples]] for examples.
+> See Appendix [#B.2. Decimal Encoding Symbol Count Examples](#b2-decimal-encoding-symbol-count-examples) for examples.
 
-Implementations MUST reject and MUST NOT generate any encoding where $B_{min} < 32$ (see Section [[#3.1.1. Initial Keying Material (IKM)]].
+Implementations MUST reject and MUST NOT generate any encoding where $B_{min} < 32$ (see Section [#3.1.1. Initial Keying Material (IKM)](#311-initial-keying-material-ikm).
 
-- [ ] Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned. #documentation  #public
+- [ ] Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned. 
 
 ### 4.1. Decimal Encoding
 
 Decimal encoding represents an MTOTP message as a string of decimal digits, suitable for voice exchange or manual entry on a numeric keypad. 
 
-> Decimal encoding is designed for use with Compact format (see Appendix [[#A.1. Decimal Encoding and Compact Format]]).
+> Decimal encoding is designed for use with Compact format (see Appendix [#A.1. Decimal Encoding and Compact Format](#a1-decimal-encoding-and-compact-format)).
 
 For this encoding, $C = \log_2(10)$.
 
-> See Appendix [[#A.3. Decimal Encoding Floating-Point Arithmetic]] for implementation notes on floating-point evaluation of this value.
+> See Appendix [#A.3. Decimal Encoding Floating-Point Arithmetic](#a3-decimal-encoding-floating-point-arithmetic) for implementation notes on floating-point evaluation of this value.
 
-Formatting characters such as spaces or hyphens MAY be added for readability and MUST be stripped before decoding. Implementations MUST NOT restrict digit input to a fixed length, and MUST reject input of fewer than 12 digits (which would result in $B_{ikm}<32$). The message length is determined by the digit count after stripping formatting characters, and is validated during decoding per Section [[#3. MTOTP Message Format]].
+Formatting characters such as spaces or hyphens MAY be added for readability and MUST be stripped before decoding. Implementations MUST NOT restrict digit input to a fixed length, and MUST reject input of fewer than 12 digits (which would result in $B_{ikm}<32$). The message length is determined by the digit count after stripping formatting characters, and is validated during decoding per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 
-> See Appendix [[#B.1. Decimal Encoding IKM Bit Length Examples]] for examples.
+> See Appendix [#B.1. Decimal Encoding IKM Bit Length Examples](#b1-decimal-encoding-ikm-bit-length-examples) for examples.
 
 #### 4.1.1. Decimal Encode Procedure
 
 An implementation SHALL encode an MTOTP binary message to a decimal string as follows:
 
 1. Determine the format (Compact or Extended) and minimum desired IKM entropy $B_{min}$ (in bits).
-2. Calculate $B_{ikm}$ per Section [[#4. MTOTP Message Encodings]].
+2. Calculate $B_{ikm}$ per Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings).
 3. Generate exactly $B_{ikm}$ bits of IKM from a cryptographically secure random source [RFC4086].
-4. Construct the complete MTOTP binary message per Section [[#3. MTOTP Message Format]].
+4. Construct the complete MTOTP binary message per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 5. Interpret the binary message as a single non-negative integer in big-endian byte order, where the first byte is the most significant. Within each byte, bit 7 is the most significant bit. Implementations MUST use arbitrary-precision unsigned integer arithmetic and MUST NOT use fixed-width integer types (e.g., uint64) as an intermediate representation, as the message integer may exceed 64 bits.
-6. Express the integer as a decimal digit string, left-padded with zeros to exactly $N_S$ digits, where $N_S$ is calculated per Section [[#4. MTOTP Message Encodings]]. The resulting string MUST contain exactly $N_S$ characters, each in the range `0`-`9`. Leading zeros are significant and MUST be preserved; omitting them would alter the binary value they represent.
+6. Express the integer as a decimal digit string, left-padded with zeros to exactly $N_S$ digits, where $N_S$ is calculated per Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings). The resulting string MUST contain exactly $N_S$ characters, each in the range `0`-`9`. Leading zeros are significant and MUST be preserved; omitting them would alter the binary value they represent.
 
 #### 4.1.2. Decimal Decode Procedure
 
@@ -504,13 +504,13 @@ An implementation SHALL decode an MTOTP decimal string to a binary message as fo
 
 1. Strip all formatting characters. Any character outside the range `0`-`9` MUST be removed before processing.
 2. Count the remaining characters to obtain $N_S$.
-3. Calculate $B_{message}$ per Section [[#4. MTOTP Message Encodings]].
+3. Calculate $B_{message}$ per Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings).
 4. Parse the digit string as a single non-negative integer using arbitrary-precision unsigned integer arithmetic. Implementations MUST NOT use fixed-width integer types (e.g., uint64) as an intermediate representation.
 5. If the parsed integer requires more bits than $B_{message}$ to represent, the message is malformed and the implementation MUST reject it with an error.
 6. Serialize the integer to exactly $\lceil B_{message} / 8 \rceil$ bytes in big-endian order, zero-padded on the left. This is the MTOTP binary message.
-7. Validate and decode the MTOTP binary message per Section [[#3. MTOTP Message Format]].
+7. Validate and decode the MTOTP binary message per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 
-> See Appendix [[#A.2. Decimal Encoding Message Length Derivation]] for notes on message length derivation.
+> See Appendix [#A.2. Decimal Encoding Message Length Derivation](#a2-decimal-encoding-message-length-derivation) for notes on message length derivation.
 
 ### 4.2. BIP39 Word List Encoding
 
@@ -518,16 +518,16 @@ BIP39 word list encoding represents an MTOTP message as a sequence of words draw
 
 For this encoding, $C = 11$. Each word in the BIP39 word list corresponds to exactly 11 bits.
 
-Note: This encoding uses the BIP39 word list as an encoding alphabet only. It does not implement the BIP39 standard [BIP39]. In particular, implementations MUST NOT apply or verify a BIP39 checksum; message integrity is provided solely by the MTOTP checksum (Section [[#3.1.2. Message Checksum]]).
+Note: This encoding uses the BIP39 word list as an encoding alphabet only. It does not implement the BIP39 standard [BIP39]. In particular, implementations MUST NOT apply or verify a BIP39 checksum; message integrity is provided solely by the MTOTP checksum (Section [#3.1.2. Message Checksum](#312-message-checksum)).
 
 #### 4.2.1. BIP39 Encode Procedure
 
 An implementation SHALL encode an MTOTP binary message to a BIP39 word sequence as follows:
 
 1. Determine the format (Compact or Extended) and minimum desired IKM entropy $B_{min}$ (in bits).
-2. Calculate $B_{ikm}$ per Section [[#4. MTOTP Message Encodings]].
+2. Calculate $B_{ikm}$ per Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings).
 3. Generate exactly $B_{ikm}$ bits of IKM from a cryptographically secure random source [RFC4086].
-4. Construct the complete MTOTP binary message per Section [[#3. MTOTP Message Format]].
+4. Construct the complete MTOTP binary message per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 5. Read the message bits from most significant to least significant, taking 11 bits at a time.
 6. For each 11-bit group, interpret it as an unsigned integer in the range 0–2047 and select the corresponding entry from the BIP39 word list.
 
@@ -550,16 +550,16 @@ Format:
 MTOTP;base64url,<data>
 ```
 
-`<data>` is the MTOTP binary message encoded as Base64URL per [RFC4648] Section [[#4. MTOTP Message Encodings]]. The prefix `MTOTP;base64url,` is case-sensitive. Decoders MUST reject strings that do not conform to this format.
+`<data>` is the MTOTP binary message encoded as Base64URL per [RFC4648] Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings). The prefix `MTOTP;base64url,` is case-sensitive. Decoders MUST reject strings that do not conform to this format.
 
 #### 4.3.1. Base64URL Encode Procedure
 
 An implementation SHALL encode an MTOTP binary message to a Base64URL string as follows:
 
 1. Determine the format (Compact or Extended) and minimum desired IKM entropy $B_{min}$ (in bits).
-2. Calculate $B_{ikm}$ per Section [[#4. MTOTP Message Encodings]].
+2. Calculate $B_{ikm}$ per Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings).
 3. Generate exactly $B_{ikm}$ bits of IKM from a cryptographically secure random source [RFC4086].
-4. Construct the complete MTOTP binary message per Section [[#3. MTOTP Message Format]].
+4. Construct the complete MTOTP binary message per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 5. Encode the binary message as Base64URL per [RFC4648] §5 (URL and Filename Safe Alphabet).
 6. Prepend the ASCII prefix `MTOTP;base64url,` to produce the encoded string.
 
@@ -572,13 +572,13 @@ An implementation SHALL decode a Base64URL encoded string to an MTOTP binary mes
 1. Verify the string begins with the ASCII prefix `MTOTP;base64url,`. If not, the message is malformed and the implementation MUST reject it with an error.
 2. Strip the prefix to obtain the Base64URL encoded data.
 3. Decode the Base64URL data per [RFC4648] §5 (URL and Filename Safe Alphabet). The resulting bit string is the MTOTP binary message.
-4. Validate and decode the MTOTP binary message per Section [[#3. MTOTP Message Format]].
+4. Validate and decode the MTOTP binary message per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 
 ## 5. Secret Derivation
 
 ### 5.1. IKM Identification
 
-Both `M_Alice`​ and `M_Bob` must be known before derivation begins. The IKM field of each message is identified per the binary structure defined in Section [[#3.1. Common Binary Structure]].
+Both `M_Alice`​ and `M_Bob` must be known before derivation begins. The IKM field of each message is identified per the binary structure defined in Section [#3.1. Common Binary Structure](#31-common-binary-structure).
 
 Let:
 
@@ -594,21 +594,21 @@ If `|IKM_Alice| + |IKM_Bob| < 64` bits, derivation MUST fail with an error.
 
 ### 5.2. Capability Negotiation
 
-Each party advertises a bitmask of supported KDF algorithms (3 bits) and a maximum supported difficulty level (3 bits, value 0–7), as carried in the MTOTP message header per Section [[#3. MTOTP Message Format]].
+Each party advertises a bitmask of supported KDF algorithms (3 bits) and a maximum supported difficulty level (3 bits, value 0–7), as carried in the MTOTP message header per Section [#3. MTOTP Message Format](#3-mtotp-message-format).
 
 Negotiation proceeds as follows:
 
 1. Select the strongest algorithm supported by both parties, in preference order Argon2id > scrypt > PBKDF2-HMAC-SHA-256. If no algorithm is supported by both parties, the exchange MUST fail.
-2. Select the lower of the two advertised maximum difficulty levels for the selected algorithm. The selected KDF parameters are defined in Section [[#6. KDF Difficulty Scaling]].
-3. If PBKDF2-HMAC-SHA-256 is selected, the selected algorithm's minimum entropy requirements MUST be verified per Section [[#6.1. PBKDF2-HMAC-SHA-256 Parameters]] before proceeding. If not met, the exchange MUST fail.
+2. Select the lower of the two advertised maximum difficulty levels for the selected algorithm. The selected KDF parameters are defined in Section [#6. KDF Difficulty Scaling](#6-kdf-difficulty-scaling).
+3. If PBKDF2-HMAC-SHA-256 is selected, the selected algorithm's minimum entropy requirements MUST be verified per Section [#6.1. PBKDF2-HMAC-SHA-256 Parameters](#61-pbkdf2-hmac-sha-256-parameters) before proceeding. If not met, the exchange MUST fail.
 
 ### 5.3. Key Derivation
 
-The KDF algorithm and difficulty level are determined by capability negotiation per Section [[#5.2. Capability Negotiation]] and Section [[#6. KDF Difficulty Scaling]]. 
+The KDF algorithm and difficulty level are determined by capability negotiation per Section [#5.2. Capability Negotiation](#52-capability-negotiation) and Section [#6. KDF Difficulty Scaling](#6-kdf-difficulty-scaling). 
 
 The protocol salt `MTOTP-v0` is a fixed ASCII string providing domain separation between protocol versions. It is not secret and does not contribute entropy.
 
-> See Appendix [[#A.4. Key Derivation Fixed Protocol Salt]] for rationale on the use of a fixed protocol salt.
+> See Appendix [#A.4. Key Derivation Fixed Protocol Salt](#a4-key-derivation-fixed-protocol-salt) for rationale on the use of a fixed protocol salt.
 
 Two 256-bit Shared Secrets are derived:
 
@@ -652,7 +652,7 @@ where $T$ is the time step counter as defined in [RFC6238]. The following parame
 | T0             | Unix epoch (1970-01-01 00:00:00 UTC) |
 | Output digits  | 6                                    |
 
-> See Appendix [[#A.5. TOTP Parameter Compatibility]] for rationale on the choice of TOTP parameters.
+> See Appendix [#A.5. TOTP Parameter Compatibility](#a5-totp-parameter-compatibility) for rationale on the choice of TOTP parameters.
 
 Implementations MUST comply with [RFC6238] for all TOTP computation, including time step calculation, dynamic truncation, and output formatting.
 
@@ -664,13 +664,13 @@ The three-bit difficulty field encodes a level in the range 0–7. This value in
 
 > **Implementation Note (Non-Normative):** Implementations SHOULD benchmark each supported KDF on first launch and select the highest difficulty level that is estimated to complete within 1–2 seconds on the device.
 
-- [ ] Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find) #technical #public
+- [ ] Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find)
 
 ### 6.1. PBKDF2-HMAC-SHA-256 Parameters
 
 PBKDF2 [RFC8018] is included solely to satisfy regulatory requirements that mandate FIPS 140-validated KDFs. Because PBKDF2-HMAC-SHA-256 is not memory-hard, a minimum combined IKM entropy of 80 bits is REQUIRED when PBKDF2 is negotiated. If this requirement is not met, the exchange MUST fail.
 
-- [ ] Confirm minimum combined IKM entropy for PBKDF2. #technical #public
+- [ ] Confirm minimum combined IKM entropy for PBKDF2.
 
 | Level | Iterations     |
 | ----- | -------------- |
@@ -683,7 +683,7 @@ PBKDF2 [RFC8018] is included solely to satisfy regulatory requirements that mand
 | 6     | 4,096,000,000  |
 | 7     | 16,384,000,000 |
 
-> See Appendix [[#A.11. PBKDF2 Historical Iteration Count Trajectory]].
+> See Appendix [#A.11. PBKDF2 Historical Iteration Count Trajectory](#a11-pbkdf2-historical-iteration-count-trajectory).
 
 ### 6.2. Scrypt Parameters
 
@@ -700,10 +700,10 @@ Parameters: $N$ = cost parameter (power of 2 per [RFC7914]), $r = 8$, $p = 1$.
 | 6     | 21           | 2 GiB                                  |
 | 7     | 22           | 4 GiB                                  |
 
-> See Appendix [[#A.12. Scrypt Difficulty Scaling Rationale]] and [[#A.13. Scrypt TMTO Resistance]].
+> See Appendix [#A.12. Scrypt Difficulty Scaling Rationale](#a12-scrypt-difficulty-scaling-rationale) and [#A.13. Scrypt TMTO Resistance](#a13-scrypt-tmto-resistance).
 
-- [ ] Decide whether to retain scrypt. #technical #public 
-- [ ] Define memory for each level more precisely. #documentation #public
+- [ ] Decide whether to retain scrypt. 
+- [ ] Define memory for each level more precisely.
 
 ### 6.3. Argon2id Parameters
 
@@ -722,10 +722,10 @@ Variant: Argon2id, version 0x13.
 | 6     | 4096      | 128 | 4   |
 | 7     | 8192      | 256 | 4   |
 
-> See Appendix [[#A.14. Argon2id Level Calibration]] and [[#A.15. Argon2id TMTO Resistance]].
+> See Appendix [#A.14. Argon2id Level Calibration](#a14-argon2id-level-calibration) and [#A.15. Argon2id TMTO Resistance](#a15-argon2id-tmto-resistance).
 
-- [ ] Consider lowering $p$ to 1 for single-threaded devices. #technical #public
-- [ ] Define memory for each level more precisely. #documentation #public
+- [ ] Consider lowering $p$ to 1 for single-threaded devices.
+- [ ] Define memory for each level more precisely.
 
 ## 7. Clock Synchronization
 
@@ -733,7 +733,7 @@ Correct TOTP operation requires that both devices maintain accurate Unix time.  
 
 ## 8. Security Considerations
 
-- [ ] Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny. #technical #external
+- [ ] Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.
 
 ### 8.1. MTOTP Message Exchange Channel
 
@@ -755,14 +755,14 @@ Implementations SHOULD inform users when the combined entropy level of their exc
 
 The KDF options in both message versions reflect resistance to GPU and ASIC-accelerated brute-force attacks, adjusted for time-memory tradeoff (TMTO) cost.
 
-scrypt [RFC7914](https://www.rfc-editor.org/info/rfc7914) is memory-hard, which limits GPU parallelism. However, scrypt is subject to a TMTO vulnerability in which an attacker using reduced memory incurs only a sub-linear time penalty.  See [[#Appendix D. Security Analysis]].
+scrypt [RFC7914](https://www.rfc-editor.org/info/rfc7914) is memory-hard, which limits GPU parallelism. However, scrypt is subject to a TMTO vulnerability in which an attacker using reduced memory incurs only a sub-linear time penalty.  See [#Appendix D. Security Analysis](#appendix-d-security-analysis).
 
 Argon2id [RFC9106](https://www.rfc-editor.org/info/rfc9106) provides improved TMTO resistance over scrypt. Its data-dependent memory access pattern requires super-linear additional computation when memory is reduced, and inter-lane dependencies prevent independent parallel attacks.  See Appendix B.
 
 Compact format fixed parameters are selected to meet or exceed the OWASP minimum configurations [OWASP] for each algorithm, while
 remaining practical on memory-constrained mobile platforms. Extended format permits explicit parameter selection across the full range of configurations recommended by [RFC9106](https://www.rfc-editor.org/info/rfc9106) and [OWASP], including values appropriate for server and desktop deployments.
 
-The fixed protocol salt “MTOTP-v0” ([[#5. Secret Derivation]]) provide domain separation but does not increase the entropy of the IKM inputs.
+The fixed protocol salt “MTOTP-v0” ([#5. Secret Derivation](#5-secret-derivation)) provide domain separation but does not increase the entropy of the IKM inputs.
 
 ### 8.4. Clock and Replay Considerations
 
@@ -770,7 +770,7 @@ TOTP codes are valid only within the time step in which they are generated.  Imp
 
 ## Appendix A. Rationale
 
-- [ ] Possibly add content here about the reasoning for always exactly filling up the $B_{ikm}$ section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro #documentation #external
+- [ ] Possibly add content here about the reasoning for always exactly filling up the $B_{ikm}$ section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro
 
 ### A.1. Decimal Encoding and Compact Format
 
@@ -826,7 +826,7 @@ The difficulty field is 3 bits, yielding 8 levels (0 through 7). Each increment 
 
 ### A.9. Baseline (Level 0)
 
-- [ ] We almost certainly want to lower the baseline / level 0 requirement to avoid preventing people with older devices from using the protocol. This document was written before we started gathering actual device stats. Once we've completed that, this scale will be updated to match. #technical #public
+- [ ] We almost certainly want to lower the baseline / level 0 requirement to avoid preventing people with older devices from using the protocol. This document was written before we started gathering actual device stats. Once we've completed that, this scale will be updated to match.
 
 Level 0 is calibrated to approximately 3-4x the AT cost of the OWASP 2024 minimum recommendations for Argon2id and scrypt [OWASP-PSCS].  The OWASP minimums are chosen for server-side password verification, where the server processes many concurrent authentications per second and must minimize per-request wall time. This protocol performs KDF evaluation once per pairing (not per authentication code), so a larger per-evaluation cost is acceptable.
 
@@ -834,7 +834,7 @@ Level 0 targets approximately 1 second of wall-clock time on a 2018-era budget s
 
 ### A.10. Cross-Algorithm Equivalence
 
-- [ ] Either remove this section or move it to the appendix #documentation #external
+- [ ] Either remove this section or move it to the appendix
 
 The scale is designed such that the same numeric level across algorithms produces approximately equivalent attacker AT cost.  Equivalence is approximate rather than exact because:
 
@@ -916,13 +916,13 @@ However, increasing $t$ beyond 2 remains useful in this protocol because it prop
 
 Per [RFC9106], to completely prevent [AB16] time-space tradeoffs, the number of passes MUST exceed $log_{2}($memory_in_blocks$) - 26$.  At $m$=8192 MiB (level 7), this requires $t >= log_{2}(8388608) - 26 = 23 - 26 = -3$, which is trivially satisfied.  At all levels in this table, the [AB16] tradeoff is fully prevented.
 
-- [ ] VERIFY the math / accuracy of this section #technical #external
+- [ ] VERIFY the math / accuracy of this section
 
 ## Appendix B. Examples
 
 ### B.1. Decimal Encoding: IKM Bit Length Examples
 
-The following table illustrates the chunking effect of the IKM bit length formula (Section [[#4. MTOTP Message Encodings]]) for decimal encoding with Compact format overhead ($B_{overhead} = 7$).
+The following table illustrates the chunking effect of the IKM bit length formula (Section [#4. MTOTP Message Encodings](#4-mtotp-message-encodings)) for decimal encoding with Compact format overhead ($B_{overhead} = 7$).
 
 | $B_{overhead}$ | $B_{min}$ | Calculated $B_{ikm}$ |
 | -------------- | --------- | -------------------- |
