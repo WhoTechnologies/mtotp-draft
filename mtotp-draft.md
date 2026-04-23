@@ -19,6 +19,19 @@ Copyright © Who Technologies (2026).
 
 This document describes an extension to the Time-Based One-Time Password (TOTP) algorithm {{!RFC6238}} that enables mutual authentication between two parties.  Standard TOTP provides unidirectional authentication: the verifying party authenticates the code-generating party, but not vice versa.  This document specifies a method by which two parties each contribute Input Keying Material (IKM) to derive two directional TOTP shared secrets, one per direction of verification, without requiring a coordinating server or either party to generate or transmit a complete cryptographic secret.
 
+## Critical Review Notice
+
+> [!NOTE]
+> **This document is a work in progress, and some critical context is currently missing. This section exists to provide that context until the appropriate text is added to the sections below.**
+> 
+> **Scope:**<br />
+> This protocol focussed on setting up a pair of TOTP secrets, in a way that allows humans to perform the exchange offline. All the same TOTP "vulnerabilities" (i.e.: intercepting shares secrets during initialization) apply to this protocol as well. We encourage the operators to share their messages over a secure connection, in the same way that TOTP recommends sharing the secret over a TLS connection, however Mallory listening in on that initialization session is outside the scope of this document (just like spying on the initial TOTP QR code is outside TOTP's scope).
+> 
+> **Entropy:**<br />
+> 64 bits of entropy is VERY LOW. This is known and has been designed into the spec as a _minimum_, not a recommendation, and is further secured by KDF* functions. The reason the _minimum_ is so low is to allow for situations that regular users find themselves in commonly: quickly and easily protecting themselves from common scammers. A 64 bit minimum means the setup messages can be encoded as easy to say (and enter) 12 digit numbers, one for each operator to enter. We believe that this is a fair balance between usability and security for for non-technical users with _this specific use case_. **MTOTP SUPPORTS MUCH MORE ENTROPY IF DESIRED**, up to 256 bits if each operator wants to share a handful of BIP39 words, or scan a QR code, or copy/paste a Base64URL string - all of these are supported (and recommended) if your use case calls for higher levels of security. 
+>
+> \* Technically Password-Based Key Derivation Functions, like Argon2id, but we're avoiding the use of the "PBKDF" term to avoid confusion between general purpose PBKDF and the PDKDF2 algorithm.
+
 ## Suggested Starting Points
 
 If you're creating an implementation, start with X.
@@ -95,7 +108,8 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
     - [A.4.7. Scrypt Difficulty Scaling Rationale](#a47-scrypt-difficulty-scaling-rationale)
     - [A.4.8. Scrypt TMTO Resistance](#a48-scrypt-tmto-resistance)
     - [A.4.9. Argon2id Level Calibration](#a49-argon2id-level-calibration)
-    - [A.4.10. Argon2id TMTO Resistance](#a410-argon2id-tmto-resistance)
+    - [A.4.10. Argon2id Historical Parameters Trajectory](#a410-argon2id-historical-parameters-trajectory)
+    - [A.4.11. Argon2id TMTO Resistance](#a411-argon2id-tmto-resistance)
 - [Appendix B. Examples](#appendix-b-examples)
   - [B.1. Decimal Encoding: IKM Bit Length Examples](#b1-decimal-encoding-ikm-bit-length-examples)
   - [B.2. Decimal Encoding: Symbol Count Examples](#b2-decimal-encoding-symbol-count-examples)
@@ -108,7 +122,7 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
 #### Technical Issues
 
 - Security Considerations > Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.   ([Section 8.](#8-security-considerations))
-- Argon2id TMTO Resistance > VERIFY the math / accuracy of this section   ([Appendix A.4.10.](#a410-argon2id-tmto-resistance))
+- Argon2id TMTO Resistance > VERIFY the math / accuracy of this section   ([Appendix A.4.11.](#a411-argon2id-tmto-resistance))
 
 #### Documentation Issues
 
@@ -190,67 +204,67 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 
 The following terms are used throughout this document:
 
-**Operator:**
+**Operator:**<br />
 The entity controlling a device participating in an MTOTP exchange. Operators are typically humans, but MAY be automated systems such as AI agents.
 
-**Alice:**
+**Alice:**<br />
 The local device and its operator. The roles of Alice and Bob are symmetric; each device considers itself Alice and its peer Bob. The labels are used for expository clarity and do not imply initiation order or protocol asymmetry.
 
-**Bob:**
+**Bob:**<br />
 The remote device and its operator.
 
-**MTOTP message:**
+**MTOTP message:**<br />
 The binary structure exchanged between two devices during the MTOTP setup procedure.
 
-**`Message_Alice` / `Message_Bob`:**
+**`Message_Alice` / `Message_Bob`:**<br />
 The MTOTP messages generated by Alice and Bob’s devices.
 
-**Input Keying Material (IKM):**
+**Input Keying Material (IKM):**<br />
 The entropy bits generated by a device and contributed to the shared secret derivation process. The IKM does not include the protocol header or checksum fields of the MTOTP message.
 
-**`IKM_Alice` / `IKM_Bob`:**
+**`IKM_Alice` / `IKM_Bob`:**<br />
 The IKM fields of `Message_Alice` and `Message_Bob`.
 
-**Compact Format:**
+**Compact Format:**<br />
 The MTOTP message format defined in [Section 3.3.](#33-compact-format-headers) optimized for decimal encoding. Carries fixed KDF parameters.
 
-**Extended Format:**
+**Extended Format:**<br />
 The MTOTP message format defined in [Section 3.2.](#32-extended-format-headers), carrying explicit negotiated KDF algorithm and parameters.
 
-**$B_{overhead}$:**
+**$B_{overhead}$:**<br />
 The number of bits occupied by the message header and checksum fields.
 
-**$B_{min}$:**
+**$B_{min}$:**<br />
 The minimum IKM entropy requested by the implementation, in bits.
 
-**$B_{ikm}$:**
+**$B_{ikm}$:**<br />
 The actual IKM length generated, in bits. Always greater than or equal to $B_{min}$, rounded up to the next symbol boundary for the chosen encoding.
 
-**$B_{message}$:**
+**$B_{message}$:**<br />
 The total message length in bits, equal to $B_{overhead} + B_{ikm}$.
 
-**$C$:**
+**$C$:**<br />
 The bits-per-symbol value for the chosen encoding.
 
-**$N_S$:**
+**$N_S$:**<br />
 The number of symbols in the encoded message.
 
-**Password-Based Key Derivation Function (KDF):**
+**Password-Based Key Derivation Function (KDF):**<br />
 A cryptographic function used to derive a Shared Secret from the combined IKM entropy. Referred in this document as just "KDF" to avoid confusion with the PBKDF2 Algorithm.
 
-**Shared Secrets:**
+**Shared Secrets:**<br />
 The TOTP keys derived from the combined IKM values of both parties. Two Shared Secrets are produced per MTOTP message exchange, one per direction of verification. Each Shared Secret serves as the key $K$ in the TOTP computation as defined in [RFC4226](https://www.rfc-editor.org/info/rfc4226) and [RFC6238](https://www.rfc-editor.org/info/rfc6238).
 
-**`SharedSecret_out`:**
+**`SharedSecret_out`:**<br />
 The derived TOTP key used by Alice to generate codes presented to Bob.
 
-**`SharedSecret_in`:**
+**`SharedSecret_in`:**<br />
 The derived TOTP key used by Alice to verify codes presented by Bob.
 
-**$K$:**
+**$K$:**<br />
 The TOTP shared secret key, as defined in [RFC6238](https://www.rfc-editor.org/info/rfc6238). In MTOTP, $K$ is either `SharedSecret_out` or `SharedSecret_in` depending on direction.
 
-**$T$:**
+**$T$:**<br />
 The time step counter, as defined in [RFC6238](https://www.rfc-editor.org/info/rfc6238).
 
 ## 3. MTOTP Message Format
@@ -729,7 +743,7 @@ Variant: Argon2id, version 0x13.
 | 6     | 4096      | 128 | 4   |
 | 7     | 8192      | 256 | 4   |
 
-> See [Appendix A.4.9.](#a49-argon2id-level-calibration) and [Appendix A.4.10.](#a410-argon2id-tmto-resistance).
+> See [Appendix A.4.9.](#a49-argon2id-level-calibration) and [Appendix A.4.11.](#a411-argon2id-tmto-resistance).
 
 - [ ] Consider lowering $p$ to 1 for single-threaded devices.  
 - [ ] Define memory for each level more precisely.  
@@ -806,6 +820,24 @@ TOTP codes are valid only within the time step in which they are generated.  Imp
 ### 9.2. Informative References
 
 [BIP39]    "bips/bip-0039.mediawiki at master · bitcoin/bips · GitHub", https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki.
+
+[OWASP Guide 2002]  "Chapter6.Authentication", https://web.archive.org/web/20021021080619/http://www.owasp.org/guide/v11/ch06.html#id2858301.
+
+[OWASP Guide 2008]  "Guide to Authentication - OWASP", https://web.archive.org/web/20080914005739/http://www.owasp.org/index.php/Guide_to_Authentication#Best_Practices.
+
+[OWASP Guide 2010]  "Guide to Authentication - OWASP", https://web.archive.org/web/20100718034930/http://www.owasp.org/index.php/Guide_to_Authentication#Minimum_hash_strength.
+
+[OWASP Guide 2011]  "Password Storage Cheat Sheet - OWASP", https://web.archive.org/web/20111008022356/https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet.
+
+[OWASP Guide 2014]  "Password Storage Cheat Sheet - OWASP", https://web.archive.org/web/20140811055758/https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet.
+
+[OWASP Cheatsheet 2019]  "CheatSheetSeries/cheatsheets/Password_Storage_Cheat_Sheet.md at 2f976f1671c6cb4e9ce9fd8cbb59cf17f31b390e · OWASP/CheatSheetSeries · GitHub", https://github.com/OWASP/CheatSheetSeries/blob/2f976f1671c6cb4e9ce9fd8cbb59cf17f31b390e/cheatsheets/Password_Storage_Cheat_Sheet.md.
+
+[OWASP Cheatsheet 2021]  "CheatSheetSeries/cheatsheets/Password_Storage_Cheat_Sheet.md at 986415b473402de66612dec5cd0b9b896ba6a7c6 · OWASP/CheatSheetSeries · GitHub", https://github.com/OWASP/CheatSheetSeries/blob/986415b473402de66612dec5cd0b9b896ba6a7c6/cheatsheets/Password_Storage_Cheat_Sheet.md.
+
+[OWASP Cheatsheet 2023]  "CheatSheetSeries/cheatsheets/Password_Storage_Cheat_Sheet.md at f14bc4c0578e1328c23094dcb0a1d8e9b778b3ec · OWASP/CheatSheetSeries · GitHub", https://github.com/OWASP/CheatSheetSeries/blob/f14bc4c0578e1328c23094dcb0a1d8e9b778b3ec/cheatsheets/Password_Storage_Cheat_Sheet.md.
+
+[OWASP Guide 2018]  "Password Storage Cheat Sheet - OWASP", https://web.archive.org/web/20180924221911/https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet#Hash_the_password_as_one_of_several_steps.
 
 ## Appendix A. Rationale
 
@@ -903,12 +935,17 @@ Capability advertisement during pairing specifies a single maximum level applica
 
 Level 0 exceeds the [OWASP-PSCS] current recommendation of 600,000 iterations for HMAC-SHA256.  The historical OWASP trajectory for PBKDF2-HMAC-SHA256 is approximately:
 
-| Year  | Recommended iterations |
-| ----- | ---------------------- |
-| 2000  | 1,000 ([RFC2898](https://www.rfc-editor.org/info/rfc2898))      |
-| 2010  | 10,000                 |
-| 2021  | 310,000 ([OWASP-PSCS]) |
-| 2023+ | 600,000 ([OWASP-PSCS]) |
+| Year | Recommended iterations | Reference                                                                                                                                                                                                                                                                |
+| ---- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 2000 | 1,000                  | "For the methods in this document, a minimum of 1000 iterations is recommended." ([RFC2898](https://www.rfc-editor.org/info/rfc2898))                                                                                                                                                                          |
+| 2002 | --                     | "Hashing the passwords with a simple hash algorithm like SHA-1 is a commonly used technique." ([OWASP Guide 2002](https://web.archive.org/web/20021021080619/http://www.owasp.org/guide/v11/ch06.html#id2858301))<br>So cute! 😇                                         |
+| 2008 | --                     | "Use AES-128 in digest mode or SHA-1 in 256 bit mode" ([OWASP Guide 2008](https://web.archive.org/web/20080914005739/http://www.owasp.org/index.php/Guide_to_Authentication#Best_Practices))                                                                             |
+| 2010 | --                     | "The minimum hash strength SHOULD be SHA-256 for the next few years." ([OWASP Guide 2010](https://web.archive.org/web/20100718034930/http://www.owasp.org/index.php/Guide_to_Authentication#Minimum_hash_strength))                                                      |
+| 2011 | --                     | "Use a modern hash: SHA or bcrypt" ([OWASP Guide 2011](https://web.archive.org/web/20111008022356/https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet))                                                                                                         |
+| 2014 | 10,000                 | "10,000 iterations Apple uses for its iTunes passwords (using PBKDF2)" ([OWASP Guide 2014](https://web.archive.org/web/20140811055758/https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet))                                                                     |
+| 2019 | 10,000 - 100,000       | "at least 10,000 (although values of up to 100,000 may be appropriate in higher security environments)." ([OWASP Cheatsheet 2019](https://github.com/OWASP/CheatSheetSeries/blob/2f976f1671c6cb4e9ce9fd8cbb59cf17f31b390e/cheatsheets/Password_Storage_Cheat_Sheet.md))  |
+| 2021 | 310,000                | "use PBKDF2 with a work factor of 310,000 or more and set with an internal hash function of HMAC-SHA-256" ([OWASP Cheatsheet 2021](https://github.com/OWASP/CheatSheetSeries/blob/986415b473402de66612dec5cd0b9b896ba6a7c6/cheatsheets/Password_Storage_Cheat_Sheet.md)) |
+| 2023 | 600,000                | "use PBKDF2 with a work factor of 600,000 or more and set with an internal hash function of HMAC-SHA-256" ([OWASP Cheatsheet 2023](https://github.com/OWASP/CheatSheetSeries/blob/f14bc4c0578e1328c23094dcb0a1d8e9b778b3ec/cheatsheets/Password_Storage_Cheat_Sheet.md)) |
 
 This represents a ~600x increase over approximately 23 years, or approximately 10 bits of work.  The 4x per-level schedule provides comparable headroom within levels 0-7.
 
@@ -952,7 +989,15 @@ Parameters: $m$ = memory in KiB, $t$ = iterations, $p$ = lanes (per [RFC9106](ht
 
 Level 0 matches the [RFC9106](https://www.rfc-editor.org/info/rfc9106) SECOND RECOMMENDED option for memory-constrained environments ($m$=64 MiB, $t$=3, $p$=4), with $t$ reduced to $2$ to bring per-evaluation time closer to 1 second on low-end mobile hardware. Level 2 approximates the [RFC9106](https://www.rfc-editor.org/info/rfc9106) FIRST RECOMMENDED option ($m$=2 GiB, $t$=1) in AT cost terms, and level 5 exceeds it by a factor of approximately 64.
 
-#### A.4.10. Argon2id TMTO Resistance
+#### A.4.10. Argon2id Historical Parameters Trajectory
+
+| Year | Recommended iterations | Reference                                                                                                                                                                                                                                                                                                                       |
+| ---- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2018 | --                     | First mention of Argon2: "Argon2 is the winner of the password hashing competition and should be considered as your first choice for new applications;" ([OWASP Guide 2018](https://web.archive.org/web/20180924221911/https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet#Hash_the_password_as_one_of_several_steps)) |
+| 2021 | m=15360, t=2, p=1      | "Use Argon2id with a minimum configuration of 15 MiB of memory, an iteration count of 2, and 1 degree of parallelism" ([OWASP Cheatsheet 2021](https://github.com/OWASP/CheatSheetSeries/blob/986415b473402de66612dec5cd0b9b896ba6a7c6/cheatsheets/Password_Storage_Cheat_Sheet.md))                                            |
+| 2023 | m=19456, t=2, p=1      | "Use Argon2id with a minimum configuration of 19 MiB of memory, an iteration count of 2, and 1 degree of parallelism" ([OWASP Cheatsheet 2023](https://github.com/OWASP/CheatSheetSeries/blob/f14bc4c0578e1328c23094dcb0a1d8e9b778b3ec/cheatsheets/Password_Storage_Cheat_Sheet.md))                                            |
+
+#### A.4.11. Argon2id TMTO Resistance
 
 Argon2id provides strong resistance to time-memory tradeoff (TMTO) attacks. Per [RFC9106](https://www.rfc-editor.org/info/rfc9106) Section 7.2, the best known attack on t-pass Argon2id is the ranking tradeoff attack, reducing the AT product by a factor of 1.33 for $t >= 2$.  At $t=2$ and above, further increases in $t$ do not meaningfully improve TMTO resistance for this range of memory sizes.
 
