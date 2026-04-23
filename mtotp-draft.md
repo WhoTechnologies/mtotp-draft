@@ -185,6 +185,9 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 
 The following terms are used throughout this document:
 
+**Operator:**
+The entity controlling a device participating in an MTOTP exchange. Operators are typically humans, but MAY be automated systems such as AI agents.
+
 **Alice:**
 The local device and its operator. The roles of Alice and Bob are symmetric; each device considers itself Alice and its peer Bob. The labels are used for expository clarity and do not imply initiation order or protocol asymmetry.
 
