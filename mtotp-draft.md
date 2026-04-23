@@ -15,52 +15,6 @@ Portions of this specification are subject to a provisional patent application, 
 
 Copyright (C) Who Technologies (2026).
 
-## TODOs
-
-### TODOs Before Sharing Externally
-
-#### Technical Issues
-
-- RFC-MTOTP-0.1k > 8 Security Considerations1
-- Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.
-- RFC-MTOTP-0.1k > A 15 Argon2id TMTO Resistance
-- VERIFY the math / accuracy of this section
-
-#### Documentation Issues
-
-- Does this draft really need to be this long?
-- RFC-MTOTP-0.1k > Appendix A Rationale > Possibly add content here about the reasoning for always exactly filling up the  section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro
-- RFC-MTOTP-0.1k > A 10 Cross-Algorithm Equivalence > Either remove this section or move it to the appendix
-- RFC-MTOTP-0.1k > Appendix E ABNF Grammar > Decide if needed and if so define formal ABNF per RFC5234 for:
-- RFC-MTOTP-0.1k > Appendix Z References > Do we need the references section? have not reviewed. Claude wrote this. Will review once spec complete.
-
-### TODOs Before Publicly Publishing
-
-#### Technical Issues
-
-- RFC-MTOTP-0.1k > 3 1 2 Message Checksum1 > Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit.
-- RFC-MTOTP-0.1k > 3 3 3 Compact Format KDF Algorithm1 > If removing scrypt as an option, we can remove this bit and apply it to elsewhere (eg: a difficulty level, or a version) instead.
-- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > "fixed to OWASP recommendations" is load-bearing text here — confirm specific parameter values before this document advances.
-- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > consider whether a 1- or 2-bit difficulty hint is feasible within the overhead budget; see TODOs in 4.3.4.1 and 4.3.4.2.
-- RFC-MTOTP-0.1k > 3 3 4 1 Compact Format scrypt1 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? Or remove scrypt completely
-- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...?
-- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy.
-- RFC-MTOTP-0.1k > 6 KDF Difficulty Scaling1 > Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find)
-- RFC-MTOTP-0.1k > 6 1 PBKDF2-HMAC-SHA-256 Parameters1 > Confirm minimum combined IKM entropy for PBKDF2.
-- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Decide whether to retain scrypt.
-- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Consider lowering  to 1 for single-threaded devices.
-- RFC-MTOTP-0.1k > A 9 Baseline Level 0 > We almost certainly want to lower the baseline / level 0 requirement to avoid preventing people with older devices from using the protocol. This document was written before we started gathering actual device stats. Once we've completed that, this scale will be updated to match.
-- RFC-MTOTP-0.1k > Appendix C Test Vectors > Include test vectors that can be used to verify third party code. Generate and verify all test vectors once parameters are finalized. Authors MUST verify all values; do not use placeholders as reference data.
-- RFC-MTOTP-0.1k > Appendix D Security Analysis > This appendix requires a dedicated writing session with verified GPU benchmarks. Structure should be comparable to RFC 4226 Appendix A.
-- RFC-MTOTP-0.1k > Appendix X Reference Implementation > Include a reference implementation that others can test their code against (Appendix X) https://www.ietf.org/rfc/rfc4226.txt / Include a JS? implementation of calculating everything, converting to/from binary, etc. https://www.ietf.org/rfc/rfc4226.txt
-
-#### Documentation Issues
-
-- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty1 > Add info to Appendix A about this being famous last words all rolled up into one little section right here. 😭
-- RFC-MTOTP-0.1k > 4 MTOTP Message Encodings1 > Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned.
-- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Define memory for each level more precisely.
-- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Define memory for each level more precisely.
-
 ## Abstract
 
 This document describes an extension to the Time-Based One-Time Password (TOTP) algorithm [RFC6238](https://www.rfc-editor.org/info/rfc6238) that enables mutual authentication between two parties.  Standard TOTP provides unidirectional authentication: the verifying party authenticates the code-generating party, but not vice versa.  This document specifies a method by which two parties each contribute Input Keying Material (IKM) to derive two directional TOTP shared secrets, one per direction of verification, without requiring a coordinating server or either party to generate or transmit a complete cryptographic secret.
@@ -141,6 +95,52 @@ If you're reviewing this document, start with [#Appendix A. Rationale](#appendix
 	- [#B.1. Decimal Encoding: IKM Bit Length Examples](#b1-decimal-encoding-ikm-bit-length-examples)
 	- [#B.2. Decimal Encoding: Symbol Count Examples](#b2-decimal-encoding-symbol-count-examples)
 	- [#B.3. Decimal Encoding: Message Bit Length Examples](#b3-decimal-encoding-message-bit-length-examples)
+
+## TODOs
+
+### TODOs Before Sharing Externally
+
+#### Technical Issues
+
+- RFC-MTOTP-0.1k > 8 Security Considerations1
+- Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.
+- RFC-MTOTP-0.1k > A 15 Argon2id TMTO Resistance
+- VERIFY the math / accuracy of this section
+
+#### Documentation Issues
+
+- Does this draft really need to be this long?
+- RFC-MTOTP-0.1k > Appendix A Rationale > Possibly add content here about the reasoning for always exactly filling up the  section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro
+- RFC-MTOTP-0.1k > A 10 Cross-Algorithm Equivalence > Either remove this section or move it to the appendix
+- RFC-MTOTP-0.1k > Appendix E ABNF Grammar > Decide if needed and if so define formal ABNF per RFC5234 for:
+- RFC-MTOTP-0.1k > Appendix Z References > Do we need the references section? have not reviewed. Claude wrote this. Will review once spec complete.
+
+### TODOs Before Publicly Publishing
+
+#### Technical Issues
+
+- RFC-MTOTP-0.1k > 3 1 2 Message Checksum1 > Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit.
+- RFC-MTOTP-0.1k > 3 3 3 Compact Format KDF Algorithm1 > If removing scrypt as an option, we can remove this bit and apply it to elsewhere (eg: a difficulty level, or a version) instead.
+- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > "fixed to OWASP recommendations" is load-bearing text here — confirm specific parameter values before this document advances.
+- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty2 > consider whether a 1- or 2-bit difficulty hint is feasible within the overhead budget; see TODOs in 4.3.4.1 and 4.3.4.2.
+- RFC-MTOTP-0.1k > 3 3 4 1 Compact Format scrypt1 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...? Or remove scrypt completely
+- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > Decide on parameters, would be REALLY nice to have that "difficulty" field from the extended format, if we could squeeze a bit or two extra out by using Hex instead of Decimal for example...?
+- RFC-MTOTP-0.1k > 3 3 4 2 Compact Format Argon2id2 > define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy.
+- RFC-MTOTP-0.1k > 6 KDF Difficulty Scaling1 > Rebalance the KDF difficulty scaling based on actual device speeds (potentially use cloud phone rentals, to run tests on actual hardware far beyond what we could find)
+- RFC-MTOTP-0.1k > 6 1 PBKDF2-HMAC-SHA-256 Parameters1 > Confirm minimum combined IKM entropy for PBKDF2.
+- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Decide whether to retain scrypt.
+- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Consider lowering  to 1 for single-threaded devices.
+- RFC-MTOTP-0.1k > A 9 Baseline Level 0 > We almost certainly want to lower the baseline / level 0 requirement to avoid preventing people with older devices from using the protocol. This document was written before we started gathering actual device stats. Once we've completed that, this scale will be updated to match.
+- RFC-MTOTP-0.1k > Appendix C Test Vectors > Include test vectors that can be used to verify third party code. Generate and verify all test vectors once parameters are finalized. Authors MUST verify all values; do not use placeholders as reference data.
+- RFC-MTOTP-0.1k > Appendix D Security Analysis > This appendix requires a dedicated writing session with verified GPU benchmarks. Structure should be comparable to RFC 4226 Appendix A.
+- RFC-MTOTP-0.1k > Appendix X Reference Implementation > Include a reference implementation that others can test their code against (Appendix X) https://www.ietf.org/rfc/rfc4226.txt / Include a JS? implementation of calculating everything, converting to/from binary, etc. https://www.ietf.org/rfc/rfc4226.txt
+
+#### Documentation Issues
+
+- RFC-MTOTP-0.1k > 3 3 4 Compact Format KDF Difficulty1 > Add info to Appendix A about this being famous last words all rolled up into one little section right here. 😭
+- RFC-MTOTP-0.1k > 4 MTOTP Message Encodings1 > Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned.
+- RFC-MTOTP-0.1k > 6 2 Scrypt Parameters1 > Define memory for each level more precisely.
+- RFC-MTOTP-0.1k > 6 3 Argon2id Parameters1 > Define memory for each level more precisely.
 
 ## 1. Introduction
 
