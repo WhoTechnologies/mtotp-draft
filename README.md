@@ -1,3 +1,3 @@
-# MTOTP: Mutual Authentication Extension to TOTP
+# mTOTP: Mutual Authentication Extension to TOTP
 
 See [mtotp-draft.md](mtotp-draft.md).

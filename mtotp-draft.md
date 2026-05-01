@@ -1,7 +1,7 @@
 Who Technologies
 Internet-Draft Intended status: Informational
 
-# MTOTP: Mutual Authentication Extension to TOTP
+# mTOTP: Mutual Authentication Extension to TOTP
 
 draft-mtotp-0.1p
 
@@ -28,7 +28,7 @@ This document describes an extension to the Time-Based One-Time Password (TOTP) 
 > This protocol focussed on setting up a pair of TOTP secrets, in a way that allows humans to perform the exchange offline. All the same TOTP "vulnerabilities" (i.e.: intercepting shares secrets during initialization) apply to this protocol as well. We encourage the operators to share their messages over a secure connection, in the same way that TOTP recommends sharing the secret over a TLS connection, however Mallory listening in on that initialization session is outside the scope of this document (just like spying on the initial TOTP QR code is outside TOTP's scope).
 > 
 > **Entropy:**<br />
-> 64 bits of entropy is VERY LOW. This is known and has been designed into the spec as a _minimum_, not a recommendation, and is further secured by KDF* functions. The reason the _minimum_ is so low is to allow for situations that regular users find themselves in commonly: quickly and easily protecting themselves from common scammers. A 64 bit minimum means the setup messages can be encoded as easy to say (and enter) 12 digit numbers, one for each operator to enter. We believe that this is a fair balance between usability and security for for non-technical users with _this specific use case_. **MTOTP SUPPORTS MUCH MORE ENTROPY IF DESIRED**, up to 256 bits if each operator wants to share a handful of BIP39 words, or scan a QR code, or copy/paste a Base64URL string - all of these are supported (and recommended) if your use case calls for higher levels of security. 
+> 64 bits of entropy is VERY LOW. This is known and has been designed into the spec as a _minimum_, not a recommendation, and is further secured by KDF* functions. The reason the _minimum_ is so low is to allow for situations that regular users find themselves in commonly: quickly and easily protecting themselves from common scammers. A 64 bit minimum means the setup messages can be encoded as easy to say (and enter) 12 digit numbers, one for each operator to enter. We believe that this is a fair balance between usability and security for for non-technical users with _this specific use case_. **mTOTP SUPPORTS MUCH MORE ENTROPY IF DESIRED**, up to 256 bits if each operator wants to share a handful of BIP39 words, or scan a QR code, or copy/paste a Base64URL string - all of these are supported (and recommended) if your use case calls for higher levels of security. 
 >
 > \* Technically Password-Based Key Derivation Functions, like Argon2id, but we're avoiding the use of the "PBKDF" term to avoid confusion between general purpose PBKDF and the PDKDF2 algorithm.
 
@@ -45,9 +45,9 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
 - [1. Introduction](#1-introduction)
   - [1.1. Scope](#11-scope)
   - [1.2. Background](#12-background)
-  - [1.3. MTOTP Process Overview](#13-mtotp-process-overview)
+  - [1.3. mTOTP Process Overview](#13-mtotp-process-overview)
 - [2. Notation and Terminology](#2-notation-and-terminology)
-- [3. MTOTP Message Format](#3-mtotp-message-format)
+- [3. mTOTP Message Format](#3-mtotp-message-format)
   - [3.1. Common Binary Structure](#31-common-binary-structure)
     - [3.1.1. Initial Keying Material (IKM)](#311-initial-keying-material-ikm)
     - [3.1.2. Message Checksum](#312-message-checksum)
@@ -63,7 +63,7 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
     - [3.3.4. Compact Format KDF Difficulty](#334-compact-format-kdf-difficulty)
       - [3.3.4.1. Compact Format scrypt](#3341-compact-format-scrypt)
       - [3.3.4.2. Compact Format Argon2id](#3342-compact-format-argon2id)
-- [4. MTOTP Message Encodings](#4-mtotp-message-encodings)
+- [4. mTOTP Message Encodings](#4-mtotp-message-encodings)
   - [4.1. Decimal Encoding](#41-decimal-encoding)
     - [4.1.1. Decimal Encode Procedure](#411-decimal-encode-procedure)
     - [4.1.2. Decimal Decode Procedure](#412-decimal-decode-procedure)
@@ -84,7 +84,7 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
   - [6.3. Argon2id Parameters](#63-argon2id-parameters)
 - [7. Clock Synchronization](#7-clock-synchronization)
 - [8. Security Considerations](#8-security-considerations)
-  - [8.1. MTOTP Message Exchange Channel](#81-mtotp-message-exchange-channel)
+  - [8.1. mTOTP Message Exchange Channel](#81-mtotp-message-exchange-channel)
   - [8.2. Entropy and Key Strength](#82-entropy-and-key-strength)
   - [8.3. Key Derivation Rationale](#83-key-derivation-rationale)
   - [8.4. Clock and Replay Considerations](#84-clock-and-replay-considerations)
@@ -117,11 +117,11 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
 
 ## TODOs
 
-### TODOs Before Sharing Externally
+### TODOs Before Sharing Widely
 
 #### Technical Issues
 
-- Security Considerations > Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.   ([Section 8.](#8-security-considerations))
+- Security Considerations > Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of mTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.   ([Section 8.](#8-security-considerations))
 - Argon2id TMTO Resistance > VERIFY the math / accuracy of this section   ([Appendix A.4.11.](#a411-argon2id-tmto-resistance))
 
 #### Documentation Issues
@@ -132,9 +132,9 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
 - Appendix Rationale > Possibly add content here about the reasoning for always exactly filling up the $B_{ikm}$ section 100% (ie: no padding) but may not be necessary as it's briefly covered in the section 5 intro   ([Appendix A.](#appendix-a-rationale))
 - Decimal Encoding and Compact Format > Figure out which section I was intending to link to and update the above "Section X" note (with link).   ([Appendix A.1.1.](#a11-decimal-encoding-and-compact-format))
 - Cross-Algorithm Equivalence > Either remove this section or move it to the appendix   ([Appendix A.4.5.](#a45-cross-algorithm-equivalence))
-- Appendix ABNF Grammar > Decide if needed and if so define formal ABNF per [RFC5234](https://www.rfc-editor.org/info/rfc5234) for:   > o  MTOTP message binary format (header, IKM, and checksum fields) > o  Decimal encoding (fixed-width digit string) > o  Encoded string format (MTOTP: prefix and base32 body) > o  JSON format (pending Section 4.4) ([Appendix E.](#appendix-e-abnf-grammar))
+- Appendix ABNF Grammar > Decide if needed and if so define formal ABNF per [RFC5234](https://www.rfc-editor.org/info/rfc5234) for:   > o  mTOTP message binary format (header, IKM, and checksum fields) > o  Decimal encoding (fixed-width digit string) > o  Encoded string format (mTOTP: prefix and base32 body) > o  JSON format (pending Section 4.4) ([Appendix E.](#appendix-e-abnf-grammar))
 
-### TODOs Before Publicly Publishing
+### TODOs Before Public Release
 
 #### Technical Issues
 
@@ -157,7 +157,7 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
 #### Documentation Issues
 
 - Compact Format KDF Difficulty > Add info to [Appendix A.](#appendix-a-rationale) about this being famous last words all rolled up into one little section right here. 😭   ([Section 3.3.4.](#334-compact-format-kdf-difficulty))
-- MTOTP Message Encodings > Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned.    ([Section 4.](#4-mtotp-message-encodings))
+- mTOTP Message Encodings > Add that apps MUST/SHOULD encourage the user NOT to share mTOTP messages over insecure channels. Cannot prevent it, but should be warned.    ([Section 4.](#4-mtotp-message-encodings))
 - Scrypt Parameters > Define memory for each level more precisely.   ([Section 6.2.](#62-scrypt-parameters))
 - Argon2id Parameters > Define memory for each level more precisely.   ([Section 6.3.](#63-argon2id-parameters))
 
@@ -165,12 +165,12 @@ If you're reviewing this document, start with [Appendix A.](#appendix-a-rational
 
 ### 1.1. Scope
 
-This document specifies MTOTP, an extension to TOTP [RFC6238](https://www.rfc-editor.org/info/rfc6238) that enables mutual authentication. 
+This document specifies mTOTP, an extension to TOTP [RFC6238](https://www.rfc-editor.org/info/rfc6238) that enables mutual authentication. 
 
 Specifically, this document defines:
 
-- A binary format for MTOTP messages in two versions: a compact version suitable for numerical entry using a fixed KDF Difficulty; and an advanced version carrying explicit negotiated KDF algorithm and parameters;
-- Encoding formats for exchanging MTOTP messages over voice, text, and digital channels;
+- A binary format for mTOTP messages in two versions: a compact version suitable for numerical entry using a fixed KDF Difficulty; and an advanced version carrying explicit negotiated KDF algorithm and parameters;
+- Encoding formats for exchanging mTOTP messages over voice, text, and digital channels;
 - A key derivation procedure that produces two directional TOTP shared secrets from the IKM values of both parties; and
 - Normative TOTP parameters for use with the derived secrets.
 
@@ -182,20 +182,20 @@ As defined in [RFC6238](https://www.rfc-editor.org/info/rfc6238), TOTP requires 
 
 Section 9 of [RFC4226](https://www.rfc-editor.org/info/rfc4226) describes a three-pass mutual authentication scheme using HOTP, in which the client presents a first one-time password, the server responds with a second, and the client verifies the server response. The TOTP equivalent requires one party to defer code presentation until the following 30-second time window, a constraint that is impractical for real-time interaction.
 
-MTOTP addresses these issues by deriving two directional secrets from a pair of independently generated IKM values, one contributed by each party. The derivation uses the two IKM values in opposite concatenation orderings, such that both devices independently arrive at identical results. Alice’s outbound shared secret equals Bob’s inbound shared secret, and vice versa, without additional coordination after the initial MTOTP message exchange.
+mTOTP addresses these issues by deriving two directional secrets from a pair of independently generated IKM values, one contributed by each party. The derivation uses the two IKM values in opposite concatenation orderings, such that both devices independently arrive at identical results. Alice’s outbound shared secret equals Bob’s inbound shared secret, and vice versa, without additional coordination after the initial mTOTP message exchange.
 
 In addition, where standard TOTP provisioning relies on the `otpauth://` URI scheme transmitted via QR code or copy-paste, the exchange of the parameters and IKM values can be encoded into a single message that humans can comfortably read, convey, and transcribe. This makes the provisioning exchange viable over voice or other low-bandwidth channels where QR codes and digital copy-paste are unavailable.
 
-### 1.3. MTOTP Process Overview
+### 1.3. mTOTP Process Overview
 
-MTOTP extends TOTP by replacing the server-provisioned shared secret with two directional secrets derived from IKM contributed by both parties. Once established, the Shared Secrets are used identically to standard TOTP [RFC6238](https://www.rfc-editor.org/info/rfc6238).
+mTOTP extends TOTP by replacing the server-provisioned shared secret with two directional secrets derived from IKM contributed by both parties. Once established, the Shared Secrets are used identically to standard TOTP [RFC6238](https://www.rfc-editor.org/info/rfc6238).
 
-Establishment requires both parties to exchange MTOTP messages. Each party constructs and transmits a message, then receives and processes the other party's message. Both steps MUST be completed before any TOTP authentication can occur. The order of exchange is not significant.
+Establishment requires both parties to exchange mTOTP messages. Each party constructs and transmits a message, then receives and processes the other party's message. Both steps MUST be completed before any TOTP authentication can occur. The order of exchange is not significant.
 
-**Preparing an MTOTP Message to Send**
+**Preparing an mTOTP Message to Send**
 Select an encoding ([Section 4.](#4-mtotp-message-encodings)), construct the message ([Section 3.](#3-mtotp-message-format)), and have the user transmit it to the other party.
 
-**Processing a Received MTOTP Message**
+**Processing a Received mTOTP Message**
 Decode and validate the received message ([Section 3.](#3-mtotp-message-format) and [Section 4.](#4-mtotp-message-encodings)), derive the Shared Secrets ([Section 5.](#5-secret-derivation)), and use each Shared Secret as key $K$ in TOTP [RFC6238](https://www.rfc-editor.org/info/rfc6238) per [Section 5.4.](#54-totp-application).
 
 ## 2. Notation and Terminology
@@ -205,7 +205,7 @@ The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL 
 The following terms are used throughout this document:
 
 **Operator:**<br />
-The entity controlling a device participating in an MTOTP exchange. Operators are typically humans, but MAY be automated systems such as AI agents.
+The entity controlling a device participating in an mTOTP exchange. Operators are typically humans, but MAY be automated systems such as AI agents.
 
 **Alice:**<br />
 The local device and its operator. The roles of Alice and Bob are symmetric; each device considers itself Alice and its peer Bob. The labels are used for expository clarity and do not imply initiation order or protocol asymmetry.
@@ -213,23 +213,23 @@ The local device and its operator. The roles of Alice and Bob are symmetric; eac
 **Bob:**<br />
 The remote device and its operator.
 
-**MTOTP message:**<br />
-The binary structure exchanged between two devices during the MTOTP setup procedure.
+**mTOTP message:**<br />
+The binary structure exchanged between two devices during the mTOTP setup procedure.
 
 **`Message_Alice` / `Message_Bob`:**<br />
-The MTOTP messages generated by Alice and Bob’s devices.
+The mTOTP messages generated by Alice and Bob’s devices.
 
 **Input Keying Material (IKM):**<br />
-The entropy bits generated by a device and contributed to the shared secret derivation process. The IKM does not include the protocol header or checksum fields of the MTOTP message.
+The entropy bits generated by a device and contributed to the shared secret derivation process. The IKM does not include the protocol header or checksum fields of the mTOTP message.
 
 **`IKM_Alice` / `IKM_Bob`:**<br />
 The IKM fields of `Message_Alice` and `Message_Bob`.
 
 **Compact Format:**<br />
-The MTOTP message format defined in [Section 3.3.](#33-compact-format-headers) optimized for decimal encoding. Carries fixed KDF parameters.
+The mTOTP message format defined in [Section 3.3.](#33-compact-format-headers) optimized for decimal encoding. Carries fixed KDF parameters.
 
 **Extended Format:**<br />
-The MTOTP message format defined in [Section 3.2.](#32-extended-format-headers), carrying explicit negotiated KDF algorithm and parameters.
+The mTOTP message format defined in [Section 3.2.](#32-extended-format-headers), carrying explicit negotiated KDF algorithm and parameters.
 
 **$B_{overhead}$:**<br />
 The number of bits occupied by the message header and checksum fields.
@@ -253,7 +253,7 @@ The number of symbols in the encoded message.
 A cryptographic function used to derive a Shared Secret from the combined IKM entropy. Referred in this document as just "KDF" to avoid confusion with the PBKDF2 Algorithm.
 
 **Shared Secrets:**<br />
-The TOTP keys derived from the combined IKM values of both parties. Two Shared Secrets are produced per MTOTP message exchange, one per direction of verification. Each Shared Secret serves as the key $K$ in the TOTP computation as defined in [RFC4226](https://www.rfc-editor.org/info/rfc4226) and [RFC6238](https://www.rfc-editor.org/info/rfc6238).
+The TOTP keys derived from the combined IKM values of both parties. Two Shared Secrets are produced per mTOTP message exchange, one per direction of verification. Each Shared Secret serves as the key $K$ in the TOTP computation as defined in [RFC4226](https://www.rfc-editor.org/info/rfc4226) and [RFC6238](https://www.rfc-editor.org/info/rfc6238).
 
 **`SharedSecret_out`:**<br />
 The derived TOTP key used by Alice to generate codes presented to Bob.
@@ -262,19 +262,19 @@ The derived TOTP key used by Alice to generate codes presented to Bob.
 The derived TOTP key used by Alice to verify codes presented by Bob.
 
 **$K$:**<br />
-The TOTP shared secret key, as defined in [RFC6238](https://www.rfc-editor.org/info/rfc6238). In MTOTP, $K$ is either `SharedSecret_out` or `SharedSecret_in` depending on direction.
+The TOTP shared secret key, as defined in [RFC6238](https://www.rfc-editor.org/info/rfc6238). In mTOTP, $K$ is either `SharedSecret_out` or `SharedSecret_in` depending on direction.
 
 **$T$:**<br />
 The time step counter, as defined in [RFC6238](https://www.rfc-editor.org/info/rfc6238).
 
-## 3. MTOTP Message Format
+## 3. mTOTP Message Format
 
 ### 3.1. Common Binary Structure
 
-All MTOTP messages share the following invariant structure:
+All mTOTP messages share the following invariant structure:
 
 ```
-MTOTP Message {
+mTOTP Message {
   Message Format (1 bit), 
   Format-Specific Headers (..), 
   IKM Bits (..), 
@@ -299,7 +299,7 @@ Present in all messages.  Structure depends on the value of the Message Format b
 Initial Keying Material. See [Section 3.1.1.](#311-initial-keying-material-ikm).
 
 **Message Checksum (5 bits):**
-Occupies the five least significant bits of every MTOTP message. See [Section 3.1.2.](#312-message-checksum).
+Occupies the five least significant bits of every mTOTP message. See [Section 3.1.2.](#312-message-checksum).
 
 #### 3.1.1. Initial Keying Material (IKM)
 
@@ -313,23 +313,23 @@ Formulas to calculate the encoding granularity for each supported encoding, alon
 
 The minimum combined IKM entropy for an exchange is 64 bits (32 bits per device). Implementations MUST verify the combined IKM length and MUST reject any message that would result in less than 64 bits of combined IKM entropy.
 
-> **Note (Non-Normative):** A minimum combined entropy of 64 bits is intentionally low by cryptographic standards. This reflects a deliberate usability tradeoff for one specific use case of MTOTP: allowing users who are not technically sophisticated to establish a shared secret by exchanging a short numeric string. MTOTP is fully capable of carrying much higher entropy — longer codes, BIP39 words, or Base64URL strings are strongly encouraged where usability permits. The KDF step is specifically chosen and parameterised to harden low-entropy inputs against brute-force attack.
+> **Note (Non-Normative):** A minimum combined entropy of 64 bits is intentionally low by cryptographic standards. This reflects a deliberate usability tradeoff for one specific use case of mTOTP: allowing users who are not technically sophisticated to establish a shared secret by exchanging a short numeric string. mTOTP is fully capable of carrying much higher entropy — longer codes, BIP39 words, or Base64URL strings are strongly encouraged where usability permits. The KDF step is specifically chosen and parameterised to harden low-entropy inputs against brute-force attack.
 
 #### 3.1.2. Message Checksum
 
-The five least significant bits of every MTOTP message are the checksum field. This field is computed identically across all message formats, permitting any implementation to validate the checksum prior to decoding the message content.
+The five least significant bits of every mTOTP message are the checksum field. This field is computed identically across all message formats, permitting any implementation to validate the checksum prior to decoding the message content.
 
-The checksum additionally serves a limited domain-separation role. Because MTOTP messages carry no dedicated magic number or protocol identifier, the domain-separated HMAC-SHA256 key "MTOTP-v0" makes the checksum distribution distinct from raw SHA-256 output. This reduces — but does not eliminate — the probability that output from an unrelated system is accepted as a valid MTOTP message.
+The checksum additionally serves a limited domain-separation role. Because mTOTP messages carry no dedicated magic number or protocol identifier, the domain-separated HMAC-SHA256 key "mTOTP-v0" makes the checksum distribution distinct from raw SHA-256 output. This reduces — but does not eliminate — the probability that output from an unrelated system is accepted as a valid mTOTP message.
 
 Let B denote the concatenation of all bits preceding the checksum (i.e., including the format bit, all header bits, and the IKM bits), zero-padded on the right to the nearest byte boundary.  The checksum is computed as:
 
 ```
-checksum_bits = MSB5(HMAC-SHA256("MTOTP-v0", B))
+checksum_bits = MSB5(HMAC-SHA256("mTOTP-v0", B))
 ```
 
-where HMAC-SHA256 is as defined in [RFC4231](https://www.rfc-editor.org/info/rfc4231), MSB5(x) denotes the five most significant bits of the first byte of x, and the HMAC key is the ASCII encoding of the literal string "MTOTP-v0".
+where HMAC-SHA256 is as defined in [RFC4231](https://www.rfc-editor.org/info/rfc4231), MSB5(x) denotes the five most significant bits of the first byte of x, and the HMAC key is the ASCII encoding of the literal string "mTOTP-v0".
 
-Implementations MUST verify the checksum upon decoding an MTOTP message and MUST reject any message that fails verification.
+Implementations MUST verify the checksum upon decoding an mTOTP message and MUST reject any message that fails verification.
 
 - [ ] Consider whether the checksum length should scale with message length. Longer messages provide more opportunity for transcription error; a longer checksum would provide proportionally stronger error detection at the cost of one bit of IKM entropy per additional checksum bit.  
 
@@ -473,9 +473,9 @@ If the specified difficulty level and entropy combined would create a secret too
 
 - [ ] define the very nebulous concept of "If the specified difficulty level and entropy combined would create a secret too weak to provide proper security, the exchange MUST fail". The biggest risk being PBKDF, which is why it’s banned from compact mode which is designed for smaller amounts of entropy.   
 
-## 4. MTOTP Message Encodings
+## 4. mTOTP Message Encodings
 
-The binary MTOTP message is the normative form; the encodings defined in this section are representations of that binary value that are more easily transmitted by humans.
+The binary mTOTP message is the normative form; the encodings defined in this section are representations of that binary value that are more easily transmitted by humans.
 
 Each encoding defines a bits-per-symbol value $C$ and a symbol unit (digits, words, or characters). The value of $C$ for each encoding is defined in its respective subsection ([Section 4.1.](#41-decimal-encoding), [Section 4.2.](#42-bip39-word-list-encoding), [Section 4.3.](#43-encoded-string)). The formulas below use these values and apply to all encodings.
 
@@ -493,11 +493,11 @@ For encodings with integer $C$, this is exact. For decimal, where $C=log⁡_{2}(
 
 Implementations MUST reject and MUST NOT generate any encoding where $B_{min} < 32$ (see [Section 3.1.1.](#311-initial-keying-material-ikm).
 
-- [ ] Add that apps MUST/SHOULD encourage the user NOT to share MTOTP messages over insecure channels. Cannot prevent it, but should be warned.   
+- [ ] Add that apps MUST/SHOULD encourage the user NOT to share mTOTP messages over insecure channels. Cannot prevent it, but should be warned.   
 
 ### 4.1. Decimal Encoding
 
-Decimal encoding represents an MTOTP message as a string of decimal digits, suitable for voice exchange or manual entry on a numeric keypad. 
+Decimal encoding represents an mTOTP message as a string of decimal digits, suitable for voice exchange or manual entry on a numeric keypad. 
 
 > Decimal encoding is designed for use with Compact format (see [Appendix A.1.1.](#a11-decimal-encoding-and-compact-format)).
 
@@ -511,90 +511,90 @@ Formatting characters such as spaces or hyphens MAY be added for readability and
 
 #### 4.1.1. Decimal Encode Procedure
 
-An implementation SHALL encode an MTOTP binary message to a decimal string as follows:
+An implementation SHALL encode an mTOTP binary message to a decimal string as follows:
 
 1. Determine the format (Compact or Extended) and minimum desired IKM entropy $B_{min}$ (in bits).
 2. Calculate $B_{ikm}$ per [Section 4.](#4-mtotp-message-encodings).
 3. Generate exactly $B_{ikm}$ bits of IKM from a cryptographically secure random source [RFC4086](https://www.rfc-editor.org/info/rfc4086).
-4. Construct the complete MTOTP binary message per [Section 3.](#3-mtotp-message-format).
+4. Construct the complete mTOTP binary message per [Section 3.](#3-mtotp-message-format).
 5. Interpret the binary message as a single non-negative integer in big-endian byte order, where the first byte is the most significant. Within each byte, bit 7 is the most significant bit. Implementations MUST use arbitrary-precision unsigned integer arithmetic and MUST NOT use fixed-width integer types (e.g., uint64) as an intermediate representation, as the message integer may exceed 64 bits.
 6. Express the integer as a decimal digit string, left-padded with zeros to exactly $N_S$ digits, where $N_S$ is calculated per [Section 4.](#4-mtotp-message-encodings). The resulting string MUST contain exactly $N_S$ characters, each in the range `0`-`9`. Leading zeros are significant and MUST be preserved; omitting them would alter the binary value they represent.
 
 #### 4.1.2. Decimal Decode Procedure
 
-An implementation SHALL decode an MTOTP decimal string to a binary message as follows:
+An implementation SHALL decode an mTOTP decimal string to a binary message as follows:
 
 1. Strip all formatting characters. Any character outside the range `0`-`9` MUST be removed before processing.
 2. Count the remaining characters to obtain $N_S$.
 3. Calculate $B_{message}$ per [Section 4.](#4-mtotp-message-encodings).
 4. Parse the digit string as a single non-negative integer using arbitrary-precision unsigned integer arithmetic. Implementations MUST NOT use fixed-width integer types (e.g., uint64) as an intermediate representation.
 5. If the parsed integer requires more bits than $B_{message}$ to represent, the message is malformed and the implementation MUST reject it with an error.
-6. Serialize the integer to exactly $\lceil B_{message} / 8 \rceil$ bytes in big-endian order, zero-padded on the left. This is the MTOTP binary message.
-7. Validate and decode the MTOTP binary message per [Section 3.](#3-mtotp-message-format).
+6. Serialize the integer to exactly $\lceil B_{message} / 8 \rceil$ bytes in big-endian order, zero-padded on the left. This is the mTOTP binary message.
+7. Validate and decode the mTOTP binary message per [Section 3.](#3-mtotp-message-format).
 
 > See [Appendix A.1.2.](#a12-decimal-encoding-message-length-derivation) for notes on message length derivation.
 
 ### 4.2. BIP39 Word List Encoding
 
-BIP39 word list encoding represents an MTOTP message as a sequence of words drawn from the BIP39 word list [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki), suitable for spoken or text-based exchange.
+BIP39 word list encoding represents an mTOTP message as a sequence of words drawn from the BIP39 word list [BIP39](https://github.com/bitcoin/bips/blob/master/bip-0039.mediawiki), suitable for spoken or text-based exchange.
 
 For this encoding, $C = 11$. Each word in the BIP39 word list corresponds to exactly 11 bits.
 
-Note: This encoding uses the BIP39 word list as an encoding alphabet only. It does not implement the BIP39 standard [BIP39]. In particular, implementations MUST NOT apply or verify a BIP39 checksum; message integrity is provided solely by the MTOTP checksum ([Section 3.1.2.](#312-message-checksum)).
+Note: This encoding uses the BIP39 word list as an encoding alphabet only. It does not implement the BIP39 standard [BIP39]. In particular, implementations MUST NOT apply or verify a BIP39 checksum; message integrity is provided solely by the mTOTP checksum ([Section 3.1.2.](#312-message-checksum)).
 
 #### 4.2.1. BIP39 Encode Procedure
 
-An implementation SHALL encode an MTOTP binary message to a BIP39 word sequence as follows:
+An implementation SHALL encode an mTOTP binary message to a BIP39 word sequence as follows:
 
 1. Determine the format (Compact or Extended) and minimum desired IKM entropy $B_{min}$ (in bits).
 2. Calculate $B_{ikm}$ per [Section 4.](#4-mtotp-message-encodings).
 3. Generate exactly $B_{ikm}$ bits of IKM from a cryptographically secure random source [RFC4086](https://www.rfc-editor.org/info/rfc4086).
-4. Construct the complete MTOTP binary message per [Section 3.](#3-mtotp-message-format).
+4. Construct the complete mTOTP binary message per [Section 3.](#3-mtotp-message-format).
 5. Read the message bits from most significant to least significant, taking 11 bits at a time.
 6. For each 11-bit group, interpret it as an unsigned integer in the range 0–2047 and select the corresponding entry from the BIP39 word list.
 
 #### 4.2.2. BIP39 Decode Procedure
 
-An implementation SHALL decode a BIP39 word sequence to an MTOTP binary message as follows:
+An implementation SHALL decode a BIP39 word sequence to an mTOTP binary message as follows:
 
 1. For each word in the input sequence, locate its index in the BIP39 word list. If any word is not found, the message is malformed and the implementation MUST reject it.
-2. Concatenate the 11-bit binary representations of the word indices, from first word to last. This is the MTOTP binary message.
-3. Validate and decode the MTOTP binary message per [Section 3.](#3-mtotp-message-format).
+2. Concatenate the 11-bit binary representations of the word indices, from first word to last. This is the mTOTP binary message.
+3. Validate and decode the mTOTP binary message per [Section 3.](#3-mtotp-message-format).
 
 ### 4.3. Encoded String
 
-Encoded string format represents an MTOTP message as a Base64URL-encoded string [RFC4648](https://www.rfc-editor.org/info/rfc4648), suitable for copy-paste over digital channels and for use as a URI or app intent.
+Encoded string format represents an mTOTP message as a Base64URL-encoded string [RFC4648](https://www.rfc-editor.org/info/rfc4648), suitable for copy-paste over digital channels and for use as a URI or app intent.
 
 For this encoding, $C = 6$.
 
 Format:
 ```
-MTOTP;base64url,<data>
+mTOTP;base64url,<data>
 ```
 
-`<data>` is the MTOTP binary message encoded as Base64URL per [RFC4648](https://www.rfc-editor.org/info/rfc4648) [Section 4.](#4-mtotp-message-encodings). The prefix `MTOTP;base64url,` is case-sensitive. Decoders MUST reject strings that do not conform to this format.
+`<data>` is the mTOTP binary message encoded as Base64URL per [RFC4648](https://www.rfc-editor.org/info/rfc4648) [Section 4.](#4-mtotp-message-encodings). The prefix `mTOTP;base64url,` is case-sensitive. Decoders MUST reject strings that do not conform to this format.
 
 #### 4.3.1. Base64URL Encode Procedure
 
-An implementation SHALL encode an MTOTP binary message to a Base64URL string as follows:
+An implementation SHALL encode an mTOTP binary message to a Base64URL string as follows:
 
 1. Determine the format (Compact or Extended) and minimum desired IKM entropy $B_{min}$ (in bits).
 2. Calculate $B_{ikm}$ per [Section 4.](#4-mtotp-message-encodings).
 3. Generate exactly $B_{ikm}$ bits of IKM from a cryptographically secure random source [RFC4086](https://www.rfc-editor.org/info/rfc4086).
-4. Construct the complete MTOTP binary message per [Section 3.](#3-mtotp-message-format).
+4. Construct the complete mTOTP binary message per [Section 3.](#3-mtotp-message-format).
 5. Encode the binary message as Base64URL per [RFC4648](https://www.rfc-editor.org/info/rfc4648) §5 (URL and Filename Safe Alphabet).
-6. Prepend the ASCII prefix `MTOTP;base64url,` to produce the encoded string.
+6. Prepend the ASCII prefix `mTOTP;base64url,` to produce the encoded string.
 
 An encoded string MAY be represented as a QR code using any conformant QR code encoder for in-person or camera-based exchange. No additional specification is required for QR encoding.
 
 #### 4.3.2. Base64URL Decode Procedure
 
-An implementation SHALL decode a Base64URL encoded string to an MTOTP binary message as follows:
+An implementation SHALL decode a Base64URL encoded string to an mTOTP binary message as follows:
 
-1. Verify the string begins with the ASCII prefix `MTOTP;base64url,`. If not, the message is malformed and the implementation MUST reject it with an error.
+1. Verify the string begins with the ASCII prefix `mTOTP;base64url,`. If not, the message is malformed and the implementation MUST reject it with an error.
 2. Strip the prefix to obtain the Base64URL encoded data.
-3. Decode the Base64URL data per [RFC4648](https://www.rfc-editor.org/info/rfc4648) §5 (URL and Filename Safe Alphabet). The resulting bit string is the MTOTP binary message.
-4. Validate and decode the MTOTP binary message per [Section 3.](#3-mtotp-message-format).
+3. Decode the Base64URL data per [RFC4648](https://www.rfc-editor.org/info/rfc4648) §5 (URL and Filename Safe Alphabet). The resulting bit string is the mTOTP binary message.
+4. Validate and decode the mTOTP binary message per [Section 3.](#3-mtotp-message-format).
 
 ## 5. Secret Derivation
 
@@ -615,7 +615,7 @@ If `|IKM_Alice| + |IKM_Bob| < 64` bits, derivation MUST fail with an error.
 
 ### 5.2. Capability Negotiation
 
-Each party advertises a bitmask of supported KDF algorithms (3 bits) and a maximum supported difficulty level (3 bits, value 0–7), as carried in the MTOTP message header per [Section 3.](#3-mtotp-message-format).
+Each party advertises a bitmask of supported KDF algorithms (3 bits) and a maximum supported difficulty level (3 bits, value 0–7), as carried in the mTOTP message header per [Section 3.](#3-mtotp-message-format).
 
 Negotiation proceeds as follows:
 
@@ -627,7 +627,7 @@ Negotiation proceeds as follows:
 
 The KDF algorithm and difficulty level are determined by capability negotiation per [Section 5.2.](#52-capability-negotiation) and [Section 6.](#6-kdf-difficulty-scaling). 
 
-The protocol salt `MTOTP-v0` is a fixed ASCII string providing domain separation between protocol versions. It is not secret and does not contribute entropy.
+The protocol salt `mTOTP-v0` is a fixed ASCII string providing domain separation between protocol versions. It is not secret and does not contribute entropy.
 
 > See [Appendix A.2.](#a2-key-derivation-fixed-protocol-salt) for rationale on the use of a fixed protocol salt.
 
@@ -636,14 +636,14 @@ Two 256-bit Shared Secrets are derived:
 ```
 SharedSecret_out = KDF(
 	IKM_Alice || IKM_Bob, 
-	salt="MTOTP-v0", 
+	salt="mTOTP-v0", 
 	length=256, 
 	<parameters>
 )
 
 SharedSecret_in = KDF(
 	IKM_Bob || IKM_Alice, 
-	salt="MTOTP-v0", 
+	salt="mTOTP-v0", 
 	length=256, 
 	<parameters>
 )
@@ -754,15 +754,15 @@ Correct TOTP operation requires that both devices maintain accurate Unix time.  
 
 ## 8. Security Considerations
 
-- [ ] Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of MTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.  
+- [ ] Security Analysis (at least a minimal one), including what we are protecting against and what we are not (eg: secure transfer of mTOTP messages is on the user). Claude wrote this based on the HOTP security analysis, even through I told it not to. I have not reviewed this and have little interest in reviewing it until the spec is complete (as I told Claude). Leaving it here because maybe it’ll be funny.  
 
-### 8.1. MTOTP Message Exchange Channel
+### 8.1. mTOTP Message Exchange Channel
 
-The security of MTOTP depends on the confidentiality of the MTOTP message exchange.  An adversary who obtains both `Message_Alice` and `Message_Bob` can derive both Shared Secrets and impersonate either party.
+The security of mTOTP depends on the confidentiality of the mTOTP message exchange.  An adversary who obtains both `Message_Alice` and `Message_Bob` can derive both Shared Secrets and impersonate either party.
 
-Implementations SHOULD instruct users to exchange MTOTP messages only over channels where third-party interception is unlikely, such as a direct voice call, in-person exchange, or an end-to-end encrypted channel.  The HOTP specification [RFC4226](https://www.rfc-editor.org/info/rfc4226) requires OTP values to be transmitted over secure channels such as TLS or IPsec; MTOTP cannot mandate a channel type for MTOTP message exchange, as this exchange is out-of-band and under user control.
+Implementations SHOULD instruct users to exchange mTOTP messages only over channels where third-party interception is unlikely, such as a direct voice call, in-person exchange, or an end-to-end encrypted channel.  The HOTP specification [RFC4226](https://www.rfc-editor.org/info/rfc4226) requires OTP values to be transmitted over secure channels such as TLS or IPsec; mTOTP cannot mandate a channel type for mTOTP message exchange, as this exchange is out-of-band and under user control.
 
-An active adversary substituting both MTOTP messages must have control of the exchange channel at the time of exchange.  Voice channels where speakers authenticate each other by voice recognition reduce the practical feasibility of this attack.
+An active adversary substituting both mTOTP messages must have control of the exchange channel at the time of exchange.  Voice channels where speakers authenticate each other by voice recognition reduce the practical feasibility of this attack.
 
 ### 8.2. Entropy and Key Strength
 
@@ -851,7 +851,7 @@ Compact format was designed specifically for use with decimal encoding. The goal
 
 To maximize entropy within a small number of digits, Compact format minimizes header overhead, leaving as many bits as possible for IKM.
 
-Voice channels (telephone, video call) are a natural fit for this exchange: they are widely accessible, require no special software, and do not leave a long-lived record of the exchanged message. Transmitting an MTOTP message over a persistent unencrypted channel such as email is discouraged (see Section X).
+Voice channels (telephone, video call) are a natural fit for this exchange: they are widely accessible, require no special software, and do not leave a long-lived record of the exchanged message. Transmitting an mTOTP message over a persistent unencrypted channel such as email is discouraged (see Section X).
 
 - [ ] Figure out which section I was intending to link to and update the above "Section X" note (with link).   
 
@@ -867,7 +867,7 @@ The IKM bit length and message bit length formulas for decimal encoding require 
 
 ### A.2. Key Derivation: Fixed Protocol Salt
 
-RFC 9106 recommends a randomly generated 128-bit salt for Argon2id. MTOTP uses a fixed protocol salt instead. This forces an attacker to build a precomputation table specifically for this protocol rather than reusing existing tables. Per-exchange uniqueness is provided by the IKM entropy.
+RFC 9106 recommends a randomly generated 128-bit salt for Argon2id. mTOTP uses a fixed protocol salt instead. This forces an attacker to build a precomputation table specifically for this protocol rather than reusing existing tables. Per-exchange uniqueness is provided by the IKM entropy.
 
 ### A.3. TOTP Parameter Compatibility
 
